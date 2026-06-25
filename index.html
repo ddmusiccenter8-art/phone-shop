@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Methmi Mobile Pvt Ltd</title>
+    <meta name="description" content="Welcome to Methmi Mobile Pvt Ltd. The best place for Mobile Phones, Laptops, Accessories, Electronic Items, and Sound Systems.">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div><i class="fa-solid fa-phone"></i> Hotline: 0773705309</div>
+            <div><i class="fa-solid fa-envelope"></i> methmimobile2014@gmail.com</div>
+        </div>
+    </div>
+
+
+    <!-- Main Header -->
+    <header class="navbar">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none;">
+                    <div class="brand-name">
+                        <span class="brand-primary">METHMI</span>
+                        <span class="brand-secondary">MOBILE</span>
+                        <span class="brand-badge">PVT LTD</span>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="search-bar" placeholder="Search for products, brands and more..." class="search-input">
+                <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            
+            <div class="header-actions">
+                <button class="action-icon-btn mobile-only-btn" onclick="openMobileCategories()">
+                    <i class="fa-solid fa-bars"></i>
+                    <span>Menu</span>
+                </button>
+                <button class="action-icon-btn" id="theme-toggle-btn" onclick="toggleTheme()">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                    <span>Theme</span>
+                </button>
+                <div class="user-menu dropdown-container" style="position: relative;">
+                    <button class="action-icon-btn" id="user-btn">
+                        <i class="fa-regular fa-user"></i>
+                        <span id="user-btn-text">Sign in</span>
+                    </button>
+                    <div class="dropdown-content" id="user-dropdown" style="display: none; position: absolute; top: 100%; right: 0; background: var(--card-bg); min-width: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; z-index: 1000; padding: 15px; border: 1px solid var(--border-color);">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
+                <div class="cart-container" id="cart-button">
+                    <button class="action-icon-btn">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Cart</span>
+                        <span class="cart-badge" id="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero-banner" style="margin-top: 0;">
+        <div class="container" style="padding-top: 15px;">
+            <div style="background-color: var(--card-bg); height: 350px; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+                <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?q=80&w=2000&auto=format&fit=crop" alt="Banner" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
+                <div class="hero-text-container">
+                    <h2 class="hero-title">GLOBAL ELECTRONICS</h2>
+                    <p class="hero-subtitle">Premium Brands. Unbeatable Prices.</p>
+                    <button class="cta-button" style="background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; border: none; padding: 12px 30px; font-weight: bold; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.7)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(59, 130, 246, 0.5)';">Shop Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad Banner -->
+    <section class="ad-banner" style="margin-top: 15px;">
+        <div class="container">
+            <div class="ad-banner-inner">
+                <div>
+                    <h3 class="ad-banner-title">SUPER BRAND DAY</h3>
+                    <p style="margin: 0; font-size: 0.9rem;">THE NEW BUZZ IN TOWN</p>
+                </div>
+                <div class="ad-banner-right">
+                    <div class="ad-banner-price">
+                        <span style="font-size: 0.8rem; text-decoration: line-through; opacity: 0.8;">MRP Rs. 6,990</span><br>
+                        <strong style="font-size: 1.4rem;">Rs. 5,640</strong>
+                    </div>
+                    <button class="cta-button" style="background-color: white; color: var(--accent-color); border: none; font-weight: bold; border-radius: 20px; padding: 8px 20px;">Shop Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container" id="main-content-area" style="margin-top: 20px;">
+        <!-- Flash Sales Container -->
+        <section class="flash-sales" id="flash-sale" style="background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 20px; padding-bottom: 15px;">
+            <div class="section-header" style="padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="category-title" style="margin: 0; font-size: 1.2rem; color: var(--secondary-accent);"><i class="fa-solid fa-bolt" style="color: var(--secondary-accent);"></i> Flash Sale</h3>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="view-all" style="font-size: 0.9rem; color: var(--text-secondary);">On Sale Now</span>
+                    <button style="background: transparent; border: 1px solid var(--secondary-accent); color: var(--secondary-accent); padding: 5px 15px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.3s;">SHOP ALL PRODUCTS</button>
+                </div>
+            </div>
+            <div class="product-grid" id="flash-sale-grid" style="padding: 15px 20px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px;">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Categories Section (Circles) -->
+        <section id="categories-circle-section" style="background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 20px; padding: 20px;">
+            <h3 style="margin-top:0; margin-bottom: 15px; color: var(--text-primary); font-size: 1.2rem;">Categories</h3>
+            <div id="categories-circle-grid" style="display: flex; gap: 30px; overflow-x: auto; padding-bottom: 10px; align-items: center;">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Regular Products -->
+        <div id="main-content">
+            <!-- Product sections dynamically injected here -->
+        </div>
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-cart">&times;</span>
+            <h2>Your Shopping Cart</h2>
+            <div id="cart-items">
+                <p>Your cart is empty.</p>
+            </div>
+            <div class="cart-total">
+                <h3>Total: Rs. <span id="cart-total-price">0</span></h3>
+                <button class="cta-button" onclick="openCheckout()">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-checkout">&times;</span>
+            <h2>Checkout</h2>
+            <form id="checkout-form" class="admin-form" style="flex-direction: column;">
+                <input type="text" id="cust-name" placeholder="Full Name" required>
+                <input type="text" id="cust-address" placeholder="Delivery Address" required>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <select id="checkout-cc" style="width: 80px; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--search-bg); color: var(--text-primary); font-family: 'Outfit', sans-serif;">
+                        <option value="+94" selected>+94</option>
+                        <option value="+1">+1</option>
+                        <option value="+44">+44</option>
+                        <option value="+91">+91</option>
+                    </select>
+                    <input type="tel" id="cust-phone" placeholder="Phone Number" required style="flex: 1;">
+                </div>
+                <select id="payment-method">
+                    <option value="cod">Cash on Delivery</option>
+                    <option value="card">Credit/Debit Card (Coming Soon)</option>
+                </select>
+                <div class="cart-total" style="border-top: none;">
+                    <h3>Amount to Pay: Rs. <span id="checkout-total">0</span></h3>
+                </div>
+                <button type="submit" class="cta-button" style="width: 100%; margin-top: 15px;">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content" style="max-width: 1000px; padding: 30px; position: relative;">
+            <span class="close-btn" id="close-product" style="position: absolute; top: 15px; right: 20px; z-index: 10;">&times;</span>
+            <div class="product-details-container" id="product-details-content">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Description Modal -->
+    <div id="desc-modal" class="modal" style="z-index: 1005;">
+        <div class="modal-content" style="max-width: 800px; padding: 30px; position: relative;">
+            <span class="close-btn" onclick="document.getElementById('desc-modal').style.display='none'" style="position: absolute; top: 15px; right: 20px; z-index: 10;">&times;</span>
+            <h2 style="margin-top:0; margin-bottom: 20px; color: var(--text-primary);"><i class="fa-solid fa-list-ul"></i> Product Specifications</h2>
+            <div id="full-desc-content" style="font-size: 1.05rem; color: var(--text-secondary); line-height: 1.8; overflow-y: auto; max-height: 60vh; padding-right: 15px;">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px; padding: 0; overflow-y: auto; max-height: 90vh;">
+            <div style="display: flex; border-bottom: 1px solid var(--border-color); background: var(--search-bg);">
+                <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+                <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+                <span class="close-btn" onclick="document.getElementById('auth-modal').style.display='none'" style="margin: 15px 20px 0 auto;">&times;</span>
+            </div>
+            
+            <div style="padding: 20px;">
+                <!-- Login Form -->
+                <div id="form-login">
+                    <button class="social-btn google-btn" onclick="mockSocialLogin('Google')"><i class="fa-brands fa-google"></i> Continue with Google</button>
+                    <button class="social-btn facebook-btn" onclick="mockSocialLogin('Facebook')"><i class="fa-brands fa-facebook-f"></i> Continue with Facebook</button>
+                    
+                    <div style="text-align: center; margin: 20px 0; color: var(--text-secondary); position: relative;">
+                        <hr style="border: none; border-top: 1px solid var(--border-color);">
+                        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--card-bg); padding: 0 10px; font-size: 0.85rem;">OR</span>
+                    </div>
+
+                    <form id="auth-form" class="admin-form" style="flex-direction: column;">
+                        <input type="text" id="auth-login-id" placeholder="Login ID (Email or Username)" required style="width: 100%;">
+                        <div style="position: relative; width: 100%;">
+                            <input type="password" id="auth-password" placeholder="Password" required style="width: 100%; padding-right: 40px;">
+                            <i class="fa-solid fa-eye" onclick="const p=document.getElementById('auth-password'); if(p.type==='password'){p.type='text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash');}else{p.type='password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye');}" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary);"></i>
+                        </div>
+                        <button type="submit" class="cta-button" style="width: 100%; background: var(--secondary-accent); color: white; border: none; padding: 12px; margin-top: 10px;">Sign In</button>
+                        <p style="text-align: center; margin-top: 10px; font-size: 0.85rem;"><a href="#" onclick="forgotPassword(); return false;" style="color: var(--text-secondary); text-decoration: underline;">Forgot Password?</a></p>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div id="form-register" style="display: none;">
+                    <form id="reg-form" class="admin-form" style="flex-direction: column; gap: 10px;">
+                        <input type="text" id="reg-name" placeholder="Full Name" required style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                        <select id="reg-role" required style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary); cursor: pointer;" onchange="toggleSellerRegFields()">
+                            <option value="buyer">I am a Customer (Buy Products)</option>
+                            <option value="seller">I am a Seller (Sell Products)</option>
+                        </select>
+                        <input type="text" id="reg-login-id" placeholder="Login ID (Email or Username)" required style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                        <div style="position: relative; width: 100%;">
+                            <input type="password" id="reg-password" placeholder="Password" required style="width: 100%; padding: 10px; padding-right: 40px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                            <i class="fa-solid fa-eye" onclick="const p=document.getElementById('reg-password'); if(p.type==='password'){p.type='text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash');}else{p.type='password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye');}" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary);"></i>
+                        </div>
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <select id="reg-cc" style="width: 80px; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--search-bg); color: var(--text-primary); font-family: 'Outfit', sans-serif;">
+                                <option value="+94" selected>+94</option>
+                                <option value="+1">+1</option>
+                                <option value="+44">+44</option>
+                                <option value="+91">+91</option>
+                            </select>
+                            <input type="tel" id="reg-phone" placeholder="Mobile Number" required style="flex: 1;">
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; width: 100%; margin-top: 5px;">
+                            <label style="font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="radio" name="address-type" value="NIC Address" checked> NIC Address
+                            </label>
+                            <label style="font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="radio" name="address-type" value="Current Address"> Current Address
+                            </label>
+                        </div>
+                        
+                        <input type="text" id="reg-address" placeholder="Street Address" required style="width: 100%;">
+                        
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <input type="text" id="reg-city" placeholder="City" required style="flex: 1;">
+                            <input type="text" id="reg-postal" placeholder="Postal Code" required style="width: 120px;">
+                        </div>
+                        
+                        <div id="seller-reg-fields" style="display: none; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--accent-color); margin-top: 5px;">
+                            <h4 style="margin: 0; color: var(--accent-color); font-size: 0.95rem;">Seller Registration Details</h4>
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                <label style="font-size: 0.85rem; color: var(--text-secondary);">Upload NIC Document <span style="color:#ef4444;">*</span></label>
+                                <input type="file" id="reg-nic-doc" accept="image/*,.pdf" style="font-size: 0.85rem; color: var(--text-primary);">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                <label style="font-size: 0.85rem; color: var(--text-secondary);">Upload Trade/Business License <span style="color:#ef4444;">*</span></label>
+                                <input type="file" id="reg-trade-doc" accept="image/*,.pdf" style="font-size: 0.85rem; color: var(--text-primary);">
+                            </div>
+                            <label style="font-size: 0.85rem; color: var(--text-primary); display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin-top: 5px; line-height: 1.4;">
+                                <input type="checkbox" id="reg-seller-terms" style="margin-top: 3px;">
+                                <span>I agree to the <strong>Seller Terms & Conditions</strong> and confirm I will not list prohibited items including Weapons, Drugs, or illegal substances. <span style="color:#ef4444;">*</span></span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="cta-button" style="width: 100%; background: var(--accent-color); color: white; border: none; padding: 12px; margin-top: 5px; font-weight: bold;">Submit</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Orders Modal -->
+    <div id="orders-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin:0;"><i class="fa-solid fa-box-open"></i> My Orders</h2>
+                <span class="close-btn" onclick="document.getElementById('orders-modal').style.display='none'">&times;</span>
+            </div>
+            <div style="padding: 20px;" id="orders-list">
+                <!-- Orders will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Feedback Section -->
+    <section class="feedback-section container" style="margin-top: 50px; margin-bottom: 50px; padding: 40px; border-radius: 15px;">
+        <h2 style="text-align:center; color: var(--accent-color); margin-bottom: 20px;">We Value Your Feedback</h2>
+        <p style="text-align:center; color: var(--text-secondary); margin-bottom: 30px;">Help us improve our services by sending your thoughts.</p>
+        <form id="feedback-form" class="admin-form" style="max-width: 600px; margin: 0 auto; flex-direction: column;">
+            <input type="text" id="fb-name" placeholder="Your Name" required>
+            <input type="email" id="fb-email" placeholder="Your Email" required>
+            <textarea id="fb-message" placeholder="Your Message / Feedback" rows="4" style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; background-color: #f8fafc; color: #1e293b; margin-bottom: 15px; font-family: 'Outfit', sans-serif;" required></textarea>
+            <button type="submit" class="cta-button" style="width: 100%;">Submit Feedback</button>
+        </form>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 style="color: white; margin-bottom: 20px;">Methmi Mobile Pvt Ltd</h3>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Your trusted partner for authentic mobile phones, laptops, and electronic accessories in Sri Lanka.</p>
+                    <div class="social-links-list">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i> Methmi Mobile Pvt Ltd</a>
+                        <a href="#"><i class="fa-brands fa-tiktok"></i> Methmi Mobile Pvt Ltd</a>
+                        <a href="#"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 style="color: white; margin-bottom: 20px;">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 style="color: white; margin-bottom: 20px;">Customer Care</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Track Order</a></li>
+                        <li><a href="#">Returns & Refunds</a></li>
+                        <li><a href="#">Warranty Information</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col contact-info">
+                    <h4 style="color: white; margin-bottom: 20px;">Contact Us</h4>
+                    <p><i class="fa-solid fa-location-dot"></i> <strong>Head Office:</strong> Main Street, Mutur 07</p>
+                    <p><i class="fa-solid fa-location-dot"></i> <strong>Branch:</strong> Batticaloa Road, Periyapalam</p>
+                    <p><i class="fa-solid fa-phone"></i> <strong>Hotlines:</strong><br>0773705309 | 0752335533<br>0768364413 | 0717505309</p>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid #334155; margin-top: 40px; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <p style="color: #94a3b8; font-size: 0.9rem;">&copy; 2026 Methmi Mobile Pvt Ltd. All rights reserved.</p>
+                <div class="payment-methods" style="color: #94a3b8; font-size: 1.5rem; display: flex; gap: 15px;">
+                    <i class="fa-brands fa-cc-visa"></i>
+                    <i class="fa-brands fa-cc-mastercard"></i>
+                    <i class="fa-brands fa-cc-paypal"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Categories Full Screen Menu -->
+    <div id="mobile-categories-menu" class="mobile-menu-overlay">
+        <div class="mobile-menu-header">
+            <h3>Categories</h3>
+            <span class="close-btn" onclick="closeMobileCategories()">&times;</span>
+        </div>
+        <div class="mobile-menu-body" id="mobile-categories-list">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <!-- Firebase Configuration -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="db.js"></script>
+
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
