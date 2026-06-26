@@ -656,7 +656,7 @@ function updateUserUI() {
             let dashboardLink = '';
             if (currentUser.role === 'seller') {
                 dashboardLink = `<a class="dropdown-item" href="seller.html"><i class="fa-solid fa-shop" style="width:20px; text-align:center; color:var(--accent-color);"></i> Seller Dashboard</a>`;
-            } else if (currentUser.role === 'admin') {
+            } else if (currentUser.role === 'admin' || currentUser.role === 'superadmin') {
                 dashboardLink = `<a class="dropdown-item" href="admin.html"><i class="fa-solid fa-gauge" style="width:20px; text-align:center; color:var(--accent-color);"></i> Admin Dashboard</a>`;
             }
 
