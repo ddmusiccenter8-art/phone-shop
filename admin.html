@@ -11,12 +11,12 @@
     <script>
         const userStr = localStorage.getItem('VASIZ_user');
         if(!userStr) {
-            alert("Access Denied! Please login as Admin.");
+            alert("Access Denied! Please login through the Super Admin Portal.");
             window.location.replace('index.html');
         } else {
             const user = JSON.parse(userStr);
-            if(user.role !== 'admin') {
-                alert("Access Denied! You do not have Admin privileges.");
+            if(user.role !== 'superadmin') {
+                alert("Access Denied! You do not have Super Admin privileges.");
                 window.location.replace('index.html');
             }
         }

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Login - Vasiz</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            color: white;
+        }
+        .login-box {
+            background-color: #1e293b;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #334155;
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+        .login-title {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: white;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #f97316, #ea580c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <div class="login-logo">VASIZ</div>
+        <div class="login-title"><i class="fa-solid fa-lock"></i> Super Admin Portal</div>
+        
+        <form id="superadmin-form">
+            <div class="input-group">
+                <label for="username">Master Username</label>
+                <input type="text" id="username" placeholder="Enter Username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Master Password</label>
+                <input type="password" id="password" placeholder="Enter Password" required>
+            </div>
+            <button type="submit" class="login-btn">Secure Login <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('superadmin-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            // HARDCODED CREDENTIALS
+            if (user === 'admin' && pass === 'admin123') {
+                const superAdminObj = {
+                    name: 'Super Admin',
+                    role: 'superadmin',
+                    loginId: 'admin'
+                };
+                localStorage.setItem('VASIZ_user', JSON.stringify(superAdminObj));
+                alert("Authentication Successful. Welcome Super Admin.");
+                window.location.replace('admin.html');
+            } else {
+                alert("Access Denied: Invalid Credentials!");
+            }
+        });
+    </script>
+</body>
+</html>
