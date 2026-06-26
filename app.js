@@ -215,6 +215,23 @@ function renderCategoriesCircleGrid() {
     section.style.display = 'block';
     grid.innerHTML = '';
     
+    // Add "All" Category
+    const allDiv = document.createElement('div');
+    allDiv.style = "display:flex; flex-direction:column; align-items:center; cursor:pointer; min-width:80px; transition: transform 0.2s;";
+    allDiv.onclick = () => {
+        renderProducts(getProducts());
+        document.getElementById('main-content').scrollIntoView({behavior: 'smooth', block: 'start'});
+    };
+    allDiv.onmouseover = () => allDiv.style.transform = 'scale(1.05)';
+    allDiv.onmouseout = () => allDiv.style.transform = 'scale(1)';
+    allDiv.innerHTML = `
+        <div style="width:70px; height:70px; border-radius:50%; background:var(--bg-color); display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px; border:1px solid var(--border-color);">
+            <span style="font-size:2rem; color:var(--text-secondary);">🌟</span>
+        </div>
+        <span style="font-size:0.8rem; text-align:center; color:var(--text-primary); max-width:80px; line-height:1.2; font-weight:bold;">All</span>
+    `;
+    grid.appendChild(allDiv);
+    
     categories.forEach(cat => {
         // Find one product in this category to use its image/icon
         const prod = allProducts.find(p => p.category === cat);
@@ -222,8 +239,9 @@ function renderCategoriesCircleGrid() {
         const catDiv = document.createElement('div');
         catDiv.style = "display:flex; flex-direction:column; align-items:center; cursor:pointer; min-width:80px; transition: transform 0.2s;";
         catDiv.onclick = () => {
-            const target = document.getElementById(cat.toLowerCase().replace(/ /g, '-'));
-            if(target) target.scrollIntoView({behavior: 'smooth', block: 'start'});
+            const filtered = getProducts().filter(p => p.category === cat);
+            renderProducts(filtered);
+            document.getElementById('main-content').scrollIntoView({behavior: 'smooth', block: 'start'});
         };
         
         catDiv.onmouseover = () => catDiv.style.transform = 'scale(1.05)';
