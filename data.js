@@ -1,14 +1,14 @@
 // Default Initial Products
 const defaultProducts = [
-    { id: 1, name: "iPhone 15 Pro", price: 320000, category: "Mobile Phones", image: "", icon: "📱", warranty: "1 Year", ratings: [], stock: 15 },
-    { id: 2, name: "Samsung Galaxy S24", price: 280000, category: "Mobile Phones", image: "", icon: "📱", warranty: "1 Year", ratings: [], stock: 10 },
-    { id: 3, name: "MacBook Pro M3", price: 550000, category: "Laptops", image: "", icon: "💻", warranty: "2 Years", ratings: [], stock: 5 },
-    { id: 4, name: "Asus ROG Zephyrus", price: 450000, category: "Laptops", image: "", icon: "💻", warranty: "2 Years", ratings: [], stock: 0 },
-    { id: 5, name: "Apple AirPods Pro", price: 75000, category: "Accessories", image: "", icon: "🎧", warranty: "6 Months", ratings: [], stock: 20 },
-    { id: 6, name: "Samsung Fast Charger", price: 8500, category: "Accessories", image: "", icon: "🔌", warranty: "6 Months", ratings: [], stock: 50 },
-    { id: 7, name: "Sony 55' 4K Smart TV", price: 210000, category: "Electronic Items", image: "", icon: "📺", warranty: "3 Years", ratings: [], stock: 8 },
-    { id: 8, name: "JBL PartyBox 310", price: 160000, category: "Sound Systems", image: "", icon: "🔊", warranty: "1 Year", ratings: [], stock: 12 },
-    { id: 9, name: "Bose SoundLink", price: 45000, category: "Sound Systems", image: "", icon: "🔉", warranty: "1 Year", ratings: [], stock: 0 }
+    { id: 1, name: "iPhone 15 Pro", price: 320000, category: "Electronics", image: "", icon: "📱", warranty: "1 Year", ratings: [], stock: 15 },
+    { id: 2, name: "Men's Casual T-Shirt", price: 2500, category: "Fashion & Apparel", image: "", icon: "👕", warranty: "No Warranty", ratings: [], stock: 100 },
+    { id: 3, name: "MacBook Pro M3", price: 550000, category: "Electronics", image: "", icon: "💻", warranty: "2 Years", ratings: [], stock: 5 },
+    { id: 4, name: "Organic Arabica Coffee (500g)", price: 4500, category: "Groceries", image: "", icon: "☕", warranty: "No Warranty", ratings: [], stock: 50 },
+    { id: 5, name: "Nike Running Shoes", price: 25000, category: "Sports & Outdoors", image: "", icon: "👟", warranty: "6 Months", ratings: [], stock: 20 },
+    { id: 6, name: "Premium Bed Sheet Set", price: 8500, category: "Home & Garden", image: "", icon: "🛏️", warranty: "No Warranty", ratings: [], stock: 50 },
+    { id: 7, name: "Sony 55' 4K Smart TV", price: 210000, category: "Electronics", image: "", icon: "📺", warranty: "3 Years", ratings: [], stock: 8 },
+    { id: 8, name: "Adjustable Dumbbell Set", price: 16000, category: "Sports & Outdoors", image: "", icon: "🏋️", warranty: "1 Year", ratings: [], stock: 12 },
+    { id: 9, name: "Stainless Steel Blender", price: 14500, category: "Home & Garden", image: "", icon: "🥤", warranty: "1 Year", ratings: [], stock: 30 }
 ];
 
 // Initialize Local Storage if empty

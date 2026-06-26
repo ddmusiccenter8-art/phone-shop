@@ -1092,3 +1092,13 @@ footer {
         display: flex;
     }
 }
+
+/* Modern Animations */
+.product-card, .stat-card { animation: fadeInUp 0.6s ease-out backwards; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease; }
+.product-card:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); border-color: var(--accent-color); }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.admin-table tr { animation: fadeInUp 0.4s ease-out backwards; }
+.admin-table tr:nth-child(1) { animation-delay: 0.1s; }
+.admin-table tr:nth-child(2) { animation-delay: 0.2s; }
+.admin-table tr:nth-child(3) { animation-delay: 0.3s; }
+
