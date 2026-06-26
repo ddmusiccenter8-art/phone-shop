@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Portal - Methmi Mobile</title>
+    <title>Seller Portal - Vasiz</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     
     <!-- Seller Security Check -->
     <script>
-        const userStr = localStorage.getItem('methmi_user');
+        const userStr = localStorage.getItem('VASIZ_user');
         if(!userStr) {
             alert("Access Denied! Please login as a Seller.");
             window.location.replace('index.html');
@@ -317,7 +317,7 @@
     <!-- Theme Logic (inline for simplicity) -->
     <script>
         function applyTheme() {
-            const savedTheme = localStorage.getItem('methmi_theme');
+            const savedTheme = localStorage.getItem('VASIZ_theme');
             const isDark = savedTheme === 'dark' || (!savedTheme && (new Date().getHours() >= 18 || new Date().getHours() < 6));
             const icons = document.querySelectorAll('#theme-icon');
             if (isDark) {
@@ -330,7 +330,7 @@
         }
         function toggleTheme() {
             const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('methmi_theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('VASIZ_theme', isDark ? 'light' : 'dark');
             applyTheme();
         }
         applyTheme();
@@ -344,3 +344,4 @@
     <script src="seller.js"></script>
 </body>
 </html>
+

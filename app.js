@@ -1,7 +1,7 @@
 // State
 // Theme Logic
 function applyTheme() {
-    const savedTheme = localStorage.getItem('methmi_theme');
+    const savedTheme = localStorage.getItem('VASIZ_theme');
     const isDark = savedTheme === 'dark' || (!savedTheme && (new Date().getHours() >= 18 || new Date().getHours() < 6));
     
     const icons = document.querySelectorAll('#theme-icon');
@@ -24,16 +24,16 @@ function applyTheme() {
 function toggleTheme() {
     const isDark = document.body.classList.contains('dark-mode');
     if (isDark) {
-        localStorage.setItem('methmi_theme', 'light');
+        localStorage.setItem('VASIZ_theme', 'light');
     } else {
-        localStorage.setItem('methmi_theme', 'dark');
+        localStorage.setItem('VASIZ_theme', 'dark');
     }
     applyTheme();
 }
 applyTheme();
 
 let cart = [];
-let currentUser = JSON.parse(localStorage.getItem('methmi_user'));
+let currentUser = JSON.parse(localStorage.getItem('VASIZ_user'));
 
 // Function to render products
 function renderProducts(productsToRender = getProducts()) {
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            const users = JSON.parse(localStorage.getItem('methmi_users')) || [];
+            const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
             const storedUser = users.find(u => u.loginId === loginId && u.password === password);
             
             if(storedUser) {
@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const postal = document.getElementById('reg-postal').value;
             const addressType = document.querySelector('input[name="address-type"]:checked').value;
             
-            const users = JSON.parse(localStorage.getItem('methmi_users')) || [];
+            const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
             if(users.some(u => u.loginId === loginId)) {
                 alert("Login ID already exists. Please choose another or Sign In.");
                 return;
@@ -543,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newUser = { loginId, password, name, phone: fullPhone, address: fullAddress, role, vendorId, nicDocUrl, tradeDocUrl, agreedToTerms };
             
             users.push(newUser);
-            localStorage.setItem('methmi_users', JSON.stringify(users));
+            localStorage.setItem('VASIZ_users', JSON.stringify(users));
             if(window.fbSaveUser) window.fbSaveUser(newUser);
             
             loginSuccess(newUser);
@@ -622,9 +622,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 message: message
             };
             
-            const feedbacks = JSON.parse(localStorage.getItem('methmi_feedbacks')) || [];
+            const feedbacks = JSON.parse(localStorage.getItem('VASIZ_feedbacks')) || [];
             feedbacks.push(newFeedback);
-            localStorage.setItem('methmi_feedbacks', JSON.stringify(feedbacks));
+            localStorage.setItem('VASIZ_feedbacks', JSON.stringify(feedbacks));
             
             if(window.fbSaveFeedback) window.fbSaveFeedback(newFeedback);
             
@@ -704,7 +704,7 @@ function toggleSellerRegFields() {
 
 function logoutUser() {
     if(confirm("Are you sure you want to logout?")) {
-        localStorage.removeItem('methmi_user');
+        localStorage.removeItem('VASIZ_user');
         currentUser = null;
         updateUserUI();
         // hide dropdown immediately
@@ -773,7 +773,7 @@ function mockSocialLogin(provider) {
 }
 
 function loginSuccess(userObj) {
-    localStorage.setItem('methmi_user', JSON.stringify(userObj));
+    localStorage.setItem('VASIZ_user', JSON.stringify(userObj));
     currentUser = userObj;
     document.getElementById('auth-modal').style.display = 'none';
     updateUserUI();
@@ -791,7 +791,7 @@ function forgotPassword() {
     const loginId = prompt("Enter your Login ID (Email or Username):");
     if (!loginId) return;
 
-    const users = JSON.parse(localStorage.getItem('methmi_users')) || [];
+    const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
     const userIndex = users.findIndex(u => u.loginId === loginId);
 
     if (userIndex === -1) {
@@ -807,7 +807,7 @@ function forgotPassword() {
         const otp = Math.floor(100000 + Math.random() * 900000);
         
         // Simulate sending SMS
-        alert(`[SIMULATED SMS]\nTo: ${phone}\nMessage: Your Methmi Mobile password reset OTP is: ${otp}\n(Do not share this with anyone)`);
+        alert(`[SIMULATED SMS]\nTo: ${phone}\nMessage: Your Vasiz password reset OTP is: ${otp}\n(Do not share this with anyone)`);
         
         const enteredOtp = prompt(`We have sent a 6-digit OTP to ${phone}.\nPlease enter the OTP below:`);
         
@@ -815,7 +815,7 @@ function forgotPassword() {
             const newPassword = prompt("OTP Verification successful! \n\nEnter your new password:");
             if (newPassword && newPassword.length > 3) {
                 users[userIndex].password = newPassword;
-                localStorage.setItem('methmi_users', JSON.stringify(users));
+                localStorage.setItem('VASIZ_users', JSON.stringify(users));
                 alert("Password reset successfully! You can now sign in.");
             } else {
                 alert("Password reset cancelled or invalid password.");
@@ -1006,3 +1006,4 @@ function closeMobileCategories() {
     const menu = document.getElementById('mobile-categories-menu');
     if (menu) menu.style.display = 'none';
 }
+

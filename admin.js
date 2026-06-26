@@ -1,6 +1,6 @@
 // Theme Logic
 function applyTheme() {
-    const savedTheme = localStorage.getItem('methmi_theme');
+    const savedTheme = localStorage.getItem('VASIZ_theme');
     const isDark = savedTheme === 'dark' || (!savedTheme && (new Date().getHours() >= 18 || new Date().getHours() < 6));
     
     const icons = document.querySelectorAll('#theme-icon');
@@ -23,9 +23,9 @@ function applyTheme() {
 function toggleTheme() {
     const isDark = document.body.classList.contains('dark-mode');
     if (isDark) {
-        localStorage.setItem('methmi_theme', 'light');
+        localStorage.setItem('VASIZ_theme', 'light');
     } else {
-        localStorage.setItem('methmi_theme', 'dark');
+        localStorage.setItem('VASIZ_theme', 'dark');
     }
     applyTheme();
 }
@@ -286,7 +286,7 @@ function calculateGlobalStats() {
     
     const commission = totalSales * 0.10; // 10%
     
-    const users = JSON.parse(localStorage.getItem('methmi_users')) || [];
+    const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
     const sellers = users.filter(u => u.role === 'seller');
     
     document.getElementById('global-sales').innerText = `Rs. ${totalSales.toLocaleString()}`;
@@ -402,7 +402,7 @@ function renderFeedbacks() {
     if (!tbody) return;
 
     tbody.innerHTML = '';
-    const feedbacks = JSON.parse(localStorage.getItem('methmi_feedbacks')) || [];
+    const feedbacks = JSON.parse(localStorage.getItem('VASIZ_feedbacks')) || [];
 
     if (feedbacks.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No feedback received yet.</td></tr>';
@@ -474,3 +474,4 @@ function updateOrderStatus(orderId, newStatus) {
         alert(`Order ${orderId} status updated to ${newStatus}`);
     }
 }
+

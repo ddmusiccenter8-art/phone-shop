@@ -12,26 +12,27 @@ const defaultProducts = [
 ];
 
 // Initialize Local Storage if empty
-if (!localStorage.getItem('methmi_products')) {
-    localStorage.setItem('methmi_products', JSON.stringify(defaultProducts));
+if (!localStorage.getItem('VASIZ_products')) {
+    localStorage.setItem('VASIZ_products', JSON.stringify(defaultProducts));
 }
 
 // Function to get products
 function getProducts() {
-    return JSON.parse(localStorage.getItem('methmi_products'));
+    return JSON.parse(localStorage.getItem('VASIZ_products'));
 }
 
 // Function to save products
 function saveProducts(products) {
-    localStorage.setItem('methmi_products', JSON.stringify(products));
+    localStorage.setItem('VASIZ_products', JSON.stringify(products));
 }
 
 // Order Management Functions
 function getOrders() {
-    const orders = localStorage.getItem('methmi_orders');
+    const orders = localStorage.getItem('VASIZ_orders');
     return orders ? JSON.parse(orders) : [];
 }
 
 function saveOrders(orders) {
-    localStorage.setItem('methmi_orders', JSON.stringify(orders));
+    localStorage.setItem('VASIZ_orders', JSON.stringify(orders));
 }
+

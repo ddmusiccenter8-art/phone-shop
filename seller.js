@@ -1,4 +1,4 @@
-const currentUser = JSON.parse(localStorage.getItem('methmi_user'));
+const currentUser = JSON.parse(localStorage.getItem('VASIZ_user'));
 
 if (currentUser && currentUser.role === 'seller') {
     document.getElementById('seller-name-display').innerText = `Vendor: ${currentUser.name}`;
@@ -269,3 +269,4 @@ function renderSellerOrders() {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No orders yet for your products.</td></tr>';
     }
 }
+
