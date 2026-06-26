@@ -28,7 +28,7 @@ async function syncProductsFromFirebase() {
             products.push(doc.data());
         });
         if (products.length > 0) {
-            localStorage.setItem('methmi_products', JSON.stringify(products));
+            localStorage.setItem('VASIZ_products', JSON.stringify(products));
             console.log("Products synced from Firebase!");
         }
     } catch (error) {
@@ -44,7 +44,7 @@ async function syncUsersFromFirebase() {
             users.push(doc.data());
         });
         if (users.length > 0) {
-            localStorage.setItem('methmi_users', JSON.stringify(users));
+            localStorage.setItem('VASIZ_users', JSON.stringify(users));
         }
     } catch (error) {
         console.error("Error syncing users:", error);
@@ -59,7 +59,7 @@ async function syncOrdersFromFirebase() {
             orders.push(doc.data());
         });
         if (orders.length > 0) {
-            localStorage.setItem('methmi_orders', JSON.stringify(orders));
+            localStorage.setItem('VASIZ_orders', JSON.stringify(orders));
         }
     } catch (error) {
         console.error("Error syncing orders:", error);
@@ -74,7 +74,7 @@ async function syncFeedbacksFromFirebase() {
             feedbacks.push(doc.data());
         });
         if (feedbacks.length > 0) {
-            localStorage.setItem('methmi_feedbacks', JSON.stringify(feedbacks));
+            localStorage.setItem('VASIZ_feedbacks', JSON.stringify(feedbacks));
         }
     } catch (error) {
         console.error("Error syncing feedbacks:", error);
