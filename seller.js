@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     populateDropdowns();
     renderSellerProducts();
     renderSellerOrders();
+    loadBankDetails();
     
     // Listen for real-time Firebase changes if connected
     if(typeof db !== 'undefined') {
@@ -267,6 +268,69 @@ function renderSellerOrders() {
     
     if(totalOrders === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No orders yet for your products.</td></tr>';
+    }
+}
+
+// ============================
+// BANK DETAILS MANAGEMENT
+// ============================
+
+function loadBankDetails() {
+    if (!currentUser) return;
+    
+    // Get latest user data from localStorage
+    const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
+    const user = users.find(u => u.loginId === currentUser.loginId);
+    
+    if (user && user.bankDetails) {
+        const bank = user.bankDetails;
+        const bankName = document.getElementById('seller-bank-name');
+        const bankBranch = document.getElementById('seller-bank-branch');
+        const accountName = document.getElementById('seller-account-name');
+        const accountNumber = document.getElementById('seller-account-number');
+        
+        if(bankName) bankName.value = bank.bankName || '';
+        if(bankBranch) bankBranch.value = bank.branch || '';
+        if(accountName) accountName.value = bank.accountName || '';
+        if(accountNumber) accountNumber.value = bank.accountNumber || '';
+    }
+}
+
+function saveBankDetails() {
+    if (!currentUser) {
+        alert('Please log in first.');
+        return;
+    }
+    
+    const bankName = document.getElementById('seller-bank-name').value;
+    const branch = document.getElementById('seller-bank-branch').value;
+    const accountName = document.getElementById('seller-account-name').value;
+    const accountNumber = document.getElementById('seller-account-number').value;
+    
+    if (!bankName || !accountNumber) {
+        alert('Please enter at least the Bank Name and Account Number.');
+        return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
+    const userIndex = users.findIndex(u => u.loginId === currentUser.loginId);
+    
+    if (userIndex !== -1) {
+        users[userIndex].bankDetails = {
+            bankName,
+            branch,
+            accountName,
+            accountNumber
+        };
+        localStorage.setItem('VASIZ_users', JSON.stringify(users));
+        
+        // Update session
+        currentUser.bankDetails = users[userIndex].bankDetails;
+        localStorage.setItem('VASIZ_user', JSON.stringify(currentUser));
+        
+        if(window.fbSaveUser) window.fbSaveUser(users[userIndex]);
+        
+        alert('Bank details saved successfully! Admin can now see your payment information.');
     }
 }
 

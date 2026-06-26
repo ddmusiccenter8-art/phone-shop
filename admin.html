@@ -292,6 +292,31 @@
             </table>
         </div>
 
+        <!-- Seller Approvals -->
+        <div class="admin-section" style="margin-top: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2><i class="fa-solid fa-user-check"></i> Seller Approvals</h2>
+                <span id="pending-seller-count" style="background: #f59e0b; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;"></span>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Login ID</th>
+                        <th>Phone</th>
+                        <th>Vendor ID</th>
+                        <th>Bank Details</th>
+                        <th>Documents</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="seller-approval-body">
+                    <!-- Rows populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
         <!-- Customer Feedbacks -->
         <div class="admin-section" style="margin-top: 40px;">
             <h3>Customer Feedbacks</h3>

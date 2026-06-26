@@ -498,6 +498,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const storedUser = users.find(u => u.loginId === loginId && u.password === password);
             
             if(storedUser) {
+                if(storedUser.role === 'seller' && storedUser.sellerStatus === 'pending_approval') {
+                    alert('Your seller account is pending approval by the Admin. Please wait until your account is approved.');
+                    return;
+                }
+                if(storedUser.role === 'seller' && storedUser.sellerStatus === 'rejected') {
+                    alert('Your seller account has been rejected. Please contact support for more information.');
+                    return;
+                }
                 loginSuccess(storedUser);
             } else {
                 alert("Invalid Login ID or Password!");
@@ -558,13 +566,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 tradeDocUrl = await readFileAsDataURL(tradeFile);
             }
             
-            const newUser = { loginId, password, name, phone: fullPhone, address: fullAddress, role, vendorId, nicDocUrl, tradeDocUrl, agreedToTerms };
+            // Collect bank details if seller
+            let bankDetails = null;
+            if (role === 'seller') {
+                bankDetails = {
+                    bankName: document.getElementById('reg-bank-name') ? document.getElementById('reg-bank-name').value : '',
+                    branch: document.getElementById('reg-bank-branch') ? document.getElementById('reg-bank-branch').value : '',
+                    accountName: document.getElementById('reg-account-name') ? document.getElementById('reg-account-name').value : '',
+                    accountNumber: document.getElementById('reg-account-number') ? document.getElementById('reg-account-number').value : ''
+                };
+            }
+            
+            const sellerStatus = role === 'seller' ? 'pending_approval' : null;
+            const newUser = { loginId, password, name, phone: fullPhone, address: fullAddress, role, vendorId, nicDocUrl, tradeDocUrl, agreedToTerms, bankDetails, sellerStatus, registeredDate: new Date().toLocaleDateString() };
             
             users.push(newUser);
             localStorage.setItem('VASIZ_users', JSON.stringify(users));
             if(window.fbSaveUser) window.fbSaveUser(newUser);
             
-            loginSuccess(newUser);
+            if (role === 'seller') {
+                alert('Your seller account has been registered successfully! Your account is now pending approval by the Admin. You will be able to log in once approved.');
+                document.getElementById('auth-modal').style.display = 'none';
+                regForm.reset();
+            } else {
+                loginSuccess(newUser);
+            }
         });
     }
 

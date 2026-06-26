@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAdminCategoryFilters();
     renderFeedbacks();
     calculateGlobalStats();
+    renderSellerApprovals();
 
     // Admin Search functionality
     const adminSearch = document.getElementById('admin-search');
@@ -472,6 +473,113 @@ function updateOrderStatus(orderId, newStatus) {
         saveOrders(orders);
         if(window.fbSaveOrder) window.fbSaveOrder(orders[orderIndex]);
         alert(`Order ${orderId} status updated to ${newStatus}`);
+    }
+}
+
+// ============================
+// SELLER APPROVAL MANAGEMENT
+// ============================
+
+function renderSellerApprovals() {
+    const tbody = document.getElementById('seller-approval-body');
+    const countBadge = document.getElementById('pending-seller-count');
+    if (!tbody) return;
+
+    const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
+    const sellers = users.filter(u => u.role === 'seller');
+
+    tbody.innerHTML = '';
+
+    if (sellers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No seller registrations found.</td></tr>';
+        if(countBadge) countBadge.innerText = '';
+        return;
+    }
+
+    const pendingCount = sellers.filter(s => s.sellerStatus === 'pending_approval').length;
+    if(countBadge) {
+        countBadge.innerText = pendingCount > 0 ? `${pendingCount} Pending` : 'All Reviewed';
+        countBadge.style.background = pendingCount > 0 ? '#f59e0b' : '#10b981';
+    }
+
+    // Show pending first, then approved, then rejected
+    const sortOrder = { 'pending_approval': 0, 'approved': 1, 'rejected': 2 };
+    sellers.sort((a, b) => (sortOrder[a.sellerStatus] || 0) - (sortOrder[b.sellerStatus] || 0));
+
+    sellers.forEach(seller => {
+        const tr = document.createElement('tr');
+        
+        let statusBadge = '';
+        let actionBtns = '';
+        
+        if (seller.sellerStatus === 'pending_approval') {
+            statusBadge = '<span style="background:#f59e0b; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">⏳ Pending</span>';
+            actionBtns = `
+                <button class="action-btn" style="background:#10b981;" onclick="approveSeller('${seller.loginId}')"><i class="fa-solid fa-check"></i> Approve</button>
+                <button class="action-btn delete-btn" onclick="rejectSeller('${seller.loginId}')"><i class="fa-solid fa-times"></i> Reject</button>
+            `;
+        } else if (seller.sellerStatus === 'approved') {
+            statusBadge = '<span style="background:#10b981; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">✅ Approved</span>';
+            actionBtns = `<button class="action-btn delete-btn" onclick="rejectSeller('${seller.loginId}')"><i class="fa-solid fa-ban"></i> Suspend</button>`;
+        } else if (seller.sellerStatus === 'rejected') {
+            statusBadge = '<span style="background:#ef4444; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">❌ Rejected</span>';
+            actionBtns = `<button class="action-btn" style="background:#10b981;" onclick="approveSeller('${seller.loginId}')"><i class="fa-solid fa-check"></i> Re-Approve</button>`;
+        }
+
+        const bank = seller.bankDetails || {};
+        const bankInfo = bank.bankName ? 
+            `<strong>${bank.bankName}</strong><br><small>${bank.branch || '-'}</small><br><small>A/C: ${bank.accountName || '-'}</small><br><small>No: ${bank.accountNumber || '-'}</small>` :
+            '<span style="color:#ef4444;">No bank details</span>';
+
+        const docsHtml = `
+            ${seller.nicDocUrl ? '<span style="color:#10b981; font-size:0.8rem;"><i class="fa-solid fa-file-circle-check"></i> NIC</span>' : '<span style="color:#ef4444; font-size:0.8rem;"><i class="fa-solid fa-file-circle-xmark"></i> No NIC</span>'}
+            <br>
+            ${seller.tradeDocUrl ? '<span style="color:#10b981; font-size:0.8rem;"><i class="fa-solid fa-file-circle-check"></i> Trade License</span>' : '<span style="color:#ef4444; font-size:0.8rem;"><i class="fa-solid fa-file-circle-xmark"></i> No License</span>'}
+        `;
+
+        tr.innerHTML = `
+            <td><strong>${seller.name}</strong><br><small style="color:var(--text-secondary);">${seller.registeredDate || '-'}</small></td>
+            <td>${seller.loginId}</td>
+            <td>${seller.phone || '-'}</td>
+            <td><code style="background:var(--search-bg); padding:2px 6px; border-radius:4px;">${seller.vendorId || '-'}</code></td>
+            <td style="font-size:0.85rem;">${bankInfo}</td>
+            <td>${docsHtml}</td>
+            <td>${statusBadge}</td>
+            <td style="display:flex; gap:5px; flex-wrap:wrap;">${actionBtns}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function approveSeller(loginId) {
+    if (!confirm(`Are you sure you want to APPROVE seller "${loginId}"?`)) return;
+    
+    const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
+    const userIndex = users.findIndex(u => u.loginId === loginId);
+    
+    if (userIndex !== -1) {
+        users[userIndex].sellerStatus = 'approved';
+        localStorage.setItem('VASIZ_users', JSON.stringify(users));
+        if(window.fbSaveUser) window.fbSaveUser(users[userIndex]);
+        renderSellerApprovals();
+        alert(`Seller "${loginId}" has been APPROVED! They can now log in and start selling.`);
+    }
+}
+
+function rejectSeller(loginId) {
+    const reason = prompt(`Enter reason for rejecting seller "${loginId}" (optional):`);
+    if (reason === null) return; // cancelled
+    
+    const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
+    const userIndex = users.findIndex(u => u.loginId === loginId);
+    
+    if (userIndex !== -1) {
+        users[userIndex].sellerStatus = 'rejected';
+        users[userIndex].rejectionReason = reason || 'No reason provided';
+        localStorage.setItem('VASIZ_users', JSON.stringify(users));
+        if(window.fbSaveUser) window.fbSaveUser(users[userIndex]);
+        renderSellerApprovals();
+        alert(`Seller "${loginId}" has been REJECTED.`);
     }
 }
 
