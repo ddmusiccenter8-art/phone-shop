@@ -68,17 +68,42 @@
         </div>
     </header>
 
-    <!-- Hero Banner -->
-    <section class="hero-banner" style="margin-top: 0;">
-        <div class="container" style="padding-top: 15px;">
-            <div style="background-color: var(--card-bg); height: 350px; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
-                <img src="banner.png" alt="Vasiz Global Marketplace Banner" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;">
-                <div class="hero-text-container">
-                    <h2 class="hero-title">YOUR GLOBAL MULTI-VENDOR MARKETPLACE</h2>
-                    <p class="hero-subtitle">Millions of Products. Worldwide Sellers. Unbeatable Prices.</p>
-                    <button class="cta-button" style="background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; border: none; padding: 12px 30px; font-weight: bold; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.7)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(59, 130, 246, 0.5)';">Shop Now</button>
-                </div>
+    <!-- Hero Dashboard Layout -->
+    <section class="hero-dashboard container" style="margin-top: 15px; display: flex; gap: 15px;">
+        <!-- Left Category Sidebar (Desktop Only) -->
+        <aside class="desktop-category-sidebar" style="width: 250px; flex-shrink: 0; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; display: flex; flex-direction: column;">
+            <div style="padding: 15px; background: var(--accent-color); color: white; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 1.05rem;">
+                <i class="fa-solid fa-list-ul"></i> Categories
             </div>
+            <ul id="desktop-category-list" class="sidebar-menu-list" style="list-style: none; padding: 0; margin: 0; overflow-y: auto; height: 300px;">
+                <!-- Populated by JS -->
+                <li style="padding: 12px 15px; color: var(--text-secondary);"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</li>
+            </ul>
+        </aside>
+
+        <!-- Main Hero Banner -->
+        <div style="flex-grow: 1; background-color: var(--card-bg); height: 350px; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+            <img src="banner.png" alt="Vasiz Global Marketplace Banner" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;">
+            <div class="hero-text-container">
+                <h2 class="hero-title">YOUR GLOBAL MULTI-VENDOR MARKETPLACE</h2>
+                <p class="hero-subtitle">Millions of Products. Worldwide Sellers. Unbeatable Prices.</p>
+                <button class="cta-button" style="background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; border: none; padding: 12px 30px; font-weight: bold; border-radius: 30px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.7)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(59, 130, 246, 0.5)';">Shop Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Brands Section -->
+    <section class="container top-brands-section" style="margin-top: 15px; background: var(--card-bg); border-radius: 8px; padding: 20px; border: 1px solid var(--border-color); box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <h3 style="margin-top:0; margin-bottom: 15px; color: var(--text-primary); font-size: 1.2rem;">Shop By Brand</h3>
+        <div class="brands-grid" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;">
+            <div class="brand-card" style="background: #ef4444; color: white;">ONEPLUS</div>
+            <div class="brand-card" style="background: #3b82f6; color: white;">SAMSUNG</div>
+            <div class="brand-card" style="background: #10b981; color: white;">XIAOMI</div>
+            <div class="brand-card" style="background: #f59e0b; color: white;">POCO</div>
+            <div class="brand-card" style="background: #8b5cf6; color: white;">APPLE</div>
+            <div class="brand-card" style="background: #1f2937; color: white;">ASUS</div>
+            <div class="brand-card" style="background: #ec4899; color: white;">SONY</div>
+            <div class="brand-card" style="background: #f43f5e; color: white;">OPPO</div>
         </div>
     </section>
 

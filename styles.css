@@ -643,11 +643,59 @@ header nav a:hover {
     gap: 20px;
 }
 .ad-banner-price {
-    text-align: right;
+    background-color: var(--search-bg);
+}
+
+/* Dashboard Category Sidebar */
+.sidebar-menu-list li {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sidebar-menu-list li:hover {
+    background: var(--bg-color);
+    color: var(--accent-color);
+    padding-left: 20px;
+}
+.sidebar-menu-list li:last-child {
+    border-bottom: none;
+}
+
+/* Brand Cards */
+.brand-card {
+    min-width: 140px;
+    height: 80px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.brand-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
 }
 
 @media (max-width: 768px) {
+    .desktop-category-sidebar {
+        display: none !important;
+    }
+    .top-brands-section {
+        display: none !important;
+    }
     .hero-text-container {
+        max-width: 80%;
         left: 20px;
         right: 20px;
         text-align: center;

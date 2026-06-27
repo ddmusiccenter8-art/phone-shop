@@ -1181,3 +1181,34 @@ window.onclick = function(event) {
     }
     if (origCloseModal) origCloseModal(event);
 }
+
+// Render Desktop Sidebar Categories
+function renderDesktopSidebar() {
+    const list = document.getElementById('desktop-category-list');
+    if (!list) return;
+    
+    const allProducts = getProducts();
+    const categories = [...new Set(allProducts.map(p => p.category))];
+    
+    list.innerHTML = '';
+    
+    categories.forEach(cat => {
+        // Find one product in this category to get the icon, or use a default
+        const prod = allProducts.find(p => p.category === cat);
+        const icon = prod && prod.icon ? prod.icon : '📌';
+        
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${icon} &nbsp; ${cat}</span> <i class="fa-solid fa-chevron-right" style="font-size:0.7rem; color:var(--text-secondary);"></i>`;
+        li.onclick = () => {
+            const filtered = getProducts().filter(p => p.category === cat);
+            renderProducts(filtered);
+            document.getElementById('main-content').scrollIntoView({behavior: 'smooth', block: 'start'});
+        };
+        list.appendChild(li);
+    });
+}
+
+// Call init functions globally when script loads
+if (document.getElementById('desktop-category-list')) {
+    renderDesktopSidebar();
+}
