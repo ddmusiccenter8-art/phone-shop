@@ -520,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const name = document.getElementById('reg-name').value;
             const loginId = document.getElementById('reg-login-id').value;
+            const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
             const role = document.getElementById('reg-role').value;
             const cc = document.getElementById('reg-cc').value;
@@ -554,13 +555,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const faceBase64 = document.getElementById('reg-face-base64') ? document.getElementById('reg-face-base64').value : '';
                 const nicBase64 = document.getElementById('reg-nic-base64') ? document.getElementById('reg-nic-base64').value : '';
+                const nicBackBase64 = document.getElementById('reg-nicback-base64') ? document.getElementById('reg-nicback-base64').value : '';
                 
                 if (!faceBase64) {
                     alert("Please capture your Live Face Photo.");
                     return;
                 }
                 if (!nicBase64) {
-                    alert("Please capture your Live NIC Photo.");
+                    alert("Please capture your Live NIC Photo (FRONT).");
+                    return;
+                }
+                if (!nicBackBase64) {
+                    alert("Please capture your Live NIC Photo (BACK).");
                     return;
                 }
                 
@@ -579,7 +585,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                nicDocUrl = nicBase64; // Use the live photo
+                nicDocUrl = nicBase64; // Use the live photo front
+                var nicBackUrl = nicBackBase64;
                 tradeDocUrl = await readFileAsDataURL(tradeFile);
                 var facePhotoUrl = faceBase64;
             }
@@ -596,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const sellerStatus = role === 'seller' ? 'pending_approval' : null;
-            const newUser = { loginId, password, name, phone: fullPhone, address: fullAddress, role, vendorId, nicDocUrl, tradeDocUrl, facePhotoUrl: (typeof facePhotoUrl !== 'undefined' ? facePhotoUrl : null), agreedToTerms, bankDetails, sellerStatus, registeredDate: new Date().toLocaleDateString() };
+            const newUser = { loginId, email, password, name, phone: fullPhone, address: fullAddress, role, vendorId, nicDocUrl, nicBackUrl: (typeof nicBackUrl !== 'undefined' ? nicBackUrl : null), tradeDocUrl, facePhotoUrl: (typeof facePhotoUrl !== 'undefined' ? facePhotoUrl : null), agreedToTerms, bankDetails, sellerStatus, registeredDate: new Date().toLocaleDateString() };
             
             users.push(newUser);
             localStorage.setItem('VASIZ_users', JSON.stringify(users));

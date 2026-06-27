@@ -234,7 +234,8 @@
                             <option value="buyer">I am a Customer (Buy Products)</option>
                             <option value="seller">I am a Seller (Sell Products)</option>
                         </select>
-                        <input type="text" id="reg-login-id" placeholder="Login ID (Email or Username)" required style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                        <input type="text" id="reg-login-id" placeholder="Login ID (Username)" required style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                        <input type="email" id="reg-email" placeholder="Email Address" required style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
                         <div style="position: relative; width: 100%;">
                             <input type="password" id="reg-password" placeholder="Password" required style="width: 100%; padding: 10px; padding-right: 40px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
                             <i class="fa-solid fa-eye" onclick="const p=document.getElementById('reg-password'); if(p.type==='password'){p.type='text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash');}else{p.type='password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye');}" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary);"></i>
@@ -284,13 +285,13 @@
                                 <input type="hidden" id="reg-face-base64">
                             </div>
 
-                            <!-- NIC Photo -->
+                            <!-- NIC Photo Front -->
                             <div style="display: flex; flex-direction: column; gap: 5px; background: var(--bg-color); padding: 10px; border-radius: 5px; border: 1px solid var(--border-color);">
-                                <label style="font-size: 0.85rem; color: var(--text-primary);"><strong>2. Live NIC Photo</strong> <span style="color:#ef4444;">*</span></label>
+                                <label style="font-size: 0.85rem; color: var(--text-primary);"><strong>2. Live NIC Photo (FRONT)</strong> <span style="color:#ef4444;">*</span></label>
                                 <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 5px 0;">Take a clear photo of the front of your National Identity Card.</p>
                                 <div id="nic-camera-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <video id="nic-video" width="100%" style="max-width:300px; border-radius:5px; background:#000;" autoplay playsinline></video>
-                                    <button type="button" class="cta-button" onclick="capturePhoto('nic')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture NIC</button>
+                                    <button type="button" class="cta-button" onclick="capturePhoto('nic')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture NIC Front</button>
                                 </div>
                                 <div id="nic-preview-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <img id="nic-preview" src="" style="width:100%; max-width:200px; border-radius:5px; border:2px solid #10b981;">
@@ -300,16 +301,32 @@
                                 <input type="hidden" id="reg-nic-base64">
                             </div>
 
+                            <!-- NIC Photo Back -->
+                            <div style="display: flex; flex-direction: column; gap: 5px; background: var(--bg-color); padding: 10px; border-radius: 5px; border: 1px solid var(--border-color);">
+                                <label style="font-size: 0.85rem; color: var(--text-primary);"><strong>3. Live NIC Photo (BACK)</strong> <span style="color:#ef4444;">*</span></label>
+                                <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 5px 0;">Take a clear photo of the back of your National Identity Card.</p>
+                                <div id="nicback-camera-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
+                                    <video id="nicback-video" width="100%" style="max-width:300px; border-radius:5px; background:#000;" autoplay playsinline></video>
+                                    <button type="button" class="cta-button" onclick="capturePhoto('nicback')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture NIC Back</button>
+                                </div>
+                                <div id="nicback-preview-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
+                                    <img id="nicback-preview" src="" style="width:100%; max-width:200px; border-radius:5px; border:2px solid #10b981;">
+                                    <button type="button" onclick="retakePhoto('nicback')" style="padding: 5px; font-size: 0.8rem; border:none; background:none; color:var(--accent-color); cursor:pointer; text-decoration:underline;">Retake</button>
+                                </div>
+                                <button type="button" id="start-nicback-btn" class="cta-button" onclick="startCamera('nicback')" style="padding: 8px; font-size: 0.85rem; width:100%;">🎥 Open Camera</button>
+                                <input type="hidden" id="reg-nicback-base64">
+                            </div>
+
                             <!-- Trade License (BR) -->
                             <div style="display: flex; flex-direction: column; gap: 5px;">
-                                <label style="font-size: 0.85rem; color: var(--text-primary);"><strong>3. Upload Trade/Business License (BR)</strong> <span style="color:#ef4444;">*</span></label>
+                                <label style="font-size: 0.85rem; color: var(--text-primary);"><strong>4. Upload Trade/Business License (BR)</strong> <span style="color:#ef4444;">*</span></label>
                                 <input type="file" id="reg-trade-doc" accept="image/*,.pdf" style="font-size: 0.85rem; color: var(--text-primary); padding: 5px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px;">
                             </div>
                             
                             <!-- Hidden Canvas for Image Processing -->
                             <canvas id="camera-canvas" style="display:none;"></canvas>
                             
-                            <h4 style="margin: 10px 0 0 0; color: #10b981; font-size: 0.95rem;"><i class="fa-solid fa-building-columns"></i> Bank Details (for payments)</h4>
+                            <h4 style="margin: 10px 0 0 0; color: #10b981; font-size: 0.95rem;"><i class="fa-solid fa-building-columns"></i> 5. Bank Details (for payments)</h4>
                             <input type="text" id="reg-bank-name" placeholder="Bank Name (e.g. BOC, Sampath, Commercial)" style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
                             <input type="text" id="reg-bank-branch" placeholder="Branch Name" style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
                             <input type="text" id="reg-account-name" placeholder="Account Holder Name" style="padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">

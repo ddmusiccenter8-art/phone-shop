@@ -535,7 +535,9 @@ function renderSellerApprovals() {
             <div style="display:flex; gap:5px; flex-wrap:wrap;">
                 ${seller.facePhotoUrl ? `<img src="${seller.facePhotoUrl}" title="Live Face Photo" onclick="viewDoc('${seller.facePhotoUrl}', 'Seller Face Photo')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No Face</span>'}
                 
-                ${seller.nicDocUrl ? `<img src="${seller.nicDocUrl}" title="NIC Document" onclick="viewDoc('${seller.nicDocUrl}', 'NIC Document')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No NIC</span>'}
+                ${seller.nicDocUrl ? `<img src="${seller.nicDocUrl}" title="NIC Front" onclick="viewDoc('${seller.nicDocUrl}', 'NIC Front Document')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No NIC Front</span>'}
+                
+                ${seller.nicBackUrl ? `<img src="${seller.nicBackUrl}" title="NIC Back" onclick="viewDoc('${seller.nicBackUrl}', 'NIC Back Document')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No NIC Back</span>'}
                 
                 ${seller.tradeDocUrl ? `<img src="${seller.tradeDocUrl}" title="Trade License (BR)" onclick="viewDoc('${seller.tradeDocUrl}', 'Trade License (BR)')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No BR</span>'}
             </div>
@@ -544,7 +546,7 @@ function renderSellerApprovals() {
 
         tr.innerHTML = `
             <td><strong>${seller.name}</strong><br><small style="color:var(--text-secondary);">${seller.registeredDate || '-'}</small></td>
-            <td>${seller.loginId}</td>
+            <td>${seller.loginId}<br><small style="color:var(--accent-color);">${seller.email || 'No Email'}</small></td>
             <td>${seller.phone || '-'}</td>
             <td><code style="background:var(--search-bg); padding:2px 6px; border-radius:4px;">${seller.vendorId || '-'}</code></td>
             <td style="font-size:0.85rem;">${bankInfo}</td>
