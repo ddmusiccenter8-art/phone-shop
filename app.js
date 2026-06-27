@@ -196,6 +196,24 @@ function renderFlashSales() {
         `;
         grid.appendChild(card);
     });
+
+    // Start Timer if not already started
+    if (!window.flashTimerInterval) {
+        window.flashTimerInterval = setInterval(() => {
+            const timerSpan = document.getElementById('flash-timer');
+            if (timerSpan) {
+                const now = new Date();
+                const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                const diff = endOfDay - now;
+                if (diff > 0) {
+                    const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                    const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+                    timerSpan.innerText = `${h}:${m}:${s}`;
+                }
+            }
+        }, 1000);
+    }
 }
 
 // Render Categories Circle Grid
@@ -303,11 +321,32 @@ function openProductModal(product) {
          <button class="modal-btn buy-btn" onclick="addToCart(${product.id}); document.getElementById('product-modal').style.display='none'; openCheckout();">Buy Now</button>` : 
         `<button class="modal-btn" style="background:var(--search-bg) !important; color:var(--text-primary) !important; border:1px solid var(--border-color); cursor:pointer;" onclick="alert('Contacting seller: ${product.vendorId || 'Admin'} for ${product.name}...')"><i class="fa-solid fa-envelope" style="margin-right:8px;"></i> Contact Seller</button>`;
 
+    let ratingsListHtml = '';
+    if (product.ratings && product.ratings.length > 0) {
+        ratingsListHtml = product.ratings.map(r => `
+            <div style="border-bottom: 1px solid var(--border-color); padding: 10px 0; margin-bottom: 10px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <strong style="color:var(--text-primary); font-size:0.9rem;">${r.user}</strong>
+                    <span style="color:var(--text-secondary); font-size:0.8rem;">${r.date}</span>
+                </div>
+                <div style="color:#f59e0b; font-size:0.8rem; margin:5px 0;">${'⭐'.repeat(r.score)}</div>
+                <p style="color:var(--text-secondary); font-size:0.9rem; margin:5px 0;">${r.comment}</p>
+                ${r.photo ? `<img src="${r.photo}" style="max-height:80px; border-radius:4px; margin-top:5px; border:1px solid var(--border-color);">` : ''}
+            </div>
+        `).join('');
+    } else {
+        ratingsListHtml = `<p style="color:var(--text-secondary); font-size:0.9rem;">No reviews yet. Be the first to review!</p>`;
+    }
+
     content.innerHTML = `
         <div style="display:flex; gap:40px; flex-wrap:wrap; align-items:flex-start;" class="product-modal-flex">
             <div style="flex:1; min-width:300px; max-width:400px;">
                 <div style="border-radius:12px; overflow:hidden; border:1px solid var(--border-color); background:var(--card-bg); display:flex; justify-content:center; align-items:center; padding:15px;">
                     <img src="${imageSrc}" alt="${product.name}" style="width:100%; max-height:400px; object-fit:contain;">
+                </div>
+                <div style="margin-top:20px; background:var(--search-bg); padding:15px; border-radius:8px; border:1px solid var(--border-color); max-height:300px; overflow-y:auto;">
+                    <h4 style="margin-top:0; color:var(--text-primary);">Customer Reviews</h4>
+                    ${ratingsListHtml}
                 </div>
             </div>
             <div class="details-info" style="flex:2; min-width:300px;">
@@ -324,6 +363,31 @@ function openProductModal(product) {
                 
                 ${warrantyHtml}
                 ${stockHtml}
+                
+                <!-- Variant Selection -->
+                <div style="margin-top: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-color);">
+                    <h4 style="margin-top: 0; margin-bottom: 10px; font-size: 1rem; color: var(--text-primary);">Select Options</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                        <div style="flex:1; min-width: 120px;">
+                            <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 5px;">Size</label>
+                            <select id="variant-size" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--search-bg); color: var(--text-primary);">
+                                <option value="Standard">Standard</option>
+                                <option value="Small">Small</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Large">Large</option>
+                            </select>
+                        </div>
+                        <div style="flex:1; min-width: 120px;">
+                            <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 5px;">Color</label>
+                            <select id="variant-color" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--search-bg); color: var(--text-primary);">
+                                <option value="Default">Default</option>
+                                <option value="Black">Black</option>
+                                <option value="White">White</option>
+                                <option value="Silver">Silver</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 
                 <div style="margin-top: 25px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
@@ -355,9 +419,20 @@ function addToCart(productId) {
             return;
         }
 
+        const sizeEl = document.getElementById('variant-size');
+        const colorEl = document.getElementById('variant-color');
+        let selectedSize = 'Standard';
+        let selectedColor = 'Default';
+        
+        if (document.getElementById('product-modal').style.display !== 'none') {
+            selectedSize = sizeEl ? sizeEl.value : 'Standard';
+            selectedColor = colorEl ? colorEl.value : 'Default';
+        }
+
+        const cartItemId = `${productId}-${selectedSize}-${selectedColor}`;
         const finalPrice = (product.discount && product.discount > 0) ? Math.floor(product.price * (1 - product.discount / 100)) : product.price;
         
-        const existingItem = cart.find(item => item.id === productId);
+        const existingItem = cart.find(item => item.cartItemId === cartItemId);
         if (existingItem) {
             if (product.stock !== undefined && existingItem.quantity >= product.stock) {
                 alert(`Sorry, you cannot add more than ${product.stock} of this item.`);
@@ -366,12 +441,21 @@ function addToCart(productId) {
             existingItem.quantity += 1;
             existingItem.totalPrice = existingItem.price * existingItem.quantity;
         } else {
-            cart.push({ ...product, price: finalPrice, originalPrice: product.price, quantity: 1, totalPrice: finalPrice });
+            cart.push({ 
+                ...product, 
+                cartItemId: cartItemId, 
+                selectedSize: selectedSize, 
+                selectedColor: selectedColor, 
+                price: finalPrice, 
+                originalPrice: product.price, 
+                quantity: 1, 
+                totalPrice: finalPrice 
+            });
         }
         
         document.getElementById('cart-count').innerText = cart.reduce((acc, item) => acc + item.quantity, 0);
         updateCartDisplay();
-        alert(`${product.name} has been added to your cart!`);
+        alert(`${product.name} (${selectedSize}, ${selectedColor}) has been added to your cart!`);
     }
 
     // Add a simple animation effect to the cart button
@@ -403,7 +487,7 @@ function updateCartDisplay() {
             const div = document.createElement('div');
             div.className = 'cart-item';
             div.innerHTML = `
-                <span>${item.name} <span style="color:var(--text-secondary); font-size:0.8rem;">(x${item.quantity})</span></span>
+                <span>${item.name} <br><small style="color:var(--text-secondary);">${item.selectedSize}, ${item.selectedColor}</small> <span style="color:var(--text-secondary); font-size:0.8rem;">(x${item.quantity})</span></span>
                 <span>Rs. ${itemTotal.toLocaleString()} <button onclick="removeFromCart(${index})" style="background:transparent; border:none; color:#ef4444; font-weight:bold; cursor:pointer; margin-left:15px; font-size:1.1rem;">&times;</button></span>
             `;
             cartItemsDiv.appendChild(div);
@@ -644,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             saveProducts(allProducts);
+            const paymentMethod = document.getElementById('payment-method') ? document.getElementById('payment-method').value : 'Cash on Delivery';
             
             const newOrder = {
                 id: 'ORD-' + Math.floor(Math.random() * 10000),
@@ -652,6 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 customerName: name,
                 customerAddress: address,
                 customerPhone: fullPhone,
+                paymentMethod: paymentMethod,
                 items: [...cart],
                 total: total,
                 status: 'Pending'
@@ -1027,15 +1113,41 @@ function rateProduct(productId) {
         return;
     }
     
-    let score = prompt("Rate this product from 1 to 5 stars (Enter a number between 1 and 5):");
-    if (!score) return;
-    score = parseInt(score);
-    if (isNaN(score) || score < 1 || score > 5) {
-        alert("Invalid rating! Please enter a number between 1 and 5.");
-        return;
+    document.getElementById('rating-product-id').value = productId;
+    setRatingStars(5);
+    document.getElementById('rating-comment').value = '';
+    document.getElementById('rating-photo').value = '';
+    document.getElementById('rating-modal').style.display = 'flex';
+}
+
+function setRatingStars(score) {
+    document.getElementById('rating-score').value = score;
+    for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById('star-rating-container').children[i-1];
+        if (i <= score) {
+            btn.style.background = 'var(--accent-color)';
+            btn.style.color = 'white';
+        } else {
+            btn.style.background = 'var(--search-bg)';
+            btn.style.color = 'var(--text-primary)';
+        }
     }
+}
+
+async function submitProductRating() {
+    const productId = parseInt(document.getElementById('rating-product-id').value);
+    const score = parseInt(document.getElementById('rating-score').value);
+    const comment = document.getElementById('rating-comment').value.trim();
+    const photoInput = document.getElementById('rating-photo');
     
-    const comment = prompt("Add an optional comment/review for this product:") || "";
+    let photoBase64 = '';
+    if (photoInput.files && photoInput.files[0]) {
+        photoBase64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(photoInput.files[0]);
+        });
+    }
     
     let products = getProducts();
     const productIndex = products.findIndex(p => p.id === productId);
@@ -1045,21 +1157,23 @@ function rateProduct(productId) {
             products[productIndex].ratings = [];
         }
         
-        // Add new rating
         products[productIndex].ratings.push({
             user: currentUser.name,
             score: score,
             comment: comment,
+            photo: photoBase64,
             date: new Date().toLocaleDateString()
         });
         
         saveProducts(products);
-        alert(`Thank you for rating ${products[productIndex].name} with ${score} stars!`);
+        if (window.fbSaveProduct) window.fbSaveProduct(products[productIndex]);
         
-        // Refresh products to show updated rating
-        if (typeof renderAllCategories === 'function') {
-            document.getElementById('product-list').innerHTML = '';
-            renderAllCategories();
+        document.getElementById('rating-modal').style.display = 'none';
+        alert("Thank you for your review!");
+        
+        // Re-render product details if open
+        if (document.getElementById('product-modal').style.display === 'flex') {
+            openProductModal(productId);
         }
     } else {
         alert("Product not found.");

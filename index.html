@@ -136,7 +136,7 @@
             <div class="section-header" style="padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                 <h3 class="category-title" style="margin: 0; font-size: 1.2rem; color: var(--secondary-accent);"><i class="fa-solid fa-bolt" style="color: var(--secondary-accent);"></i> Flash Sale</h3>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="view-all" style="font-size: 0.9rem; color: var(--text-secondary);">On Sale Now</span>
+                    <span class="view-all" style="font-size: 0.9rem; color: var(--text-secondary);">Ending in: <span id="flash-timer" style="color:var(--secondary-accent); font-weight:bold; background:#fef08a; padding:2px 5px; border-radius:3px;">00:00:00</span></span>
                     <button style="background: transparent; border: 1px solid var(--secondary-accent); color: var(--secondary-accent); padding: 5px 15px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.3s;">SHOP ALL PRODUCTS</button>
                 </div>
             </div>
@@ -207,9 +207,10 @@
                     </select>
                     <input type="tel" id="cust-phone" placeholder="Phone Number" required style="flex: 1;">
                 </div>
-                <select id="payment-method">
-                    <option value="cod">Cash on Delivery</option>
-                    <option value="card">Credit/Debit Card (Coming Soon)</option>
+                <select id="payment-method" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--search-bg); color: var(--text-primary); font-family: 'Outfit', sans-serif;">
+                    <option value="Cash on Delivery">Cash on Delivery</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Online Payment">Online Payment (Card/Gateway)</option>
                 </select>
                 <div class="cart-total" style="border-top: none;">
                     <h3>Amount to Pay: Rs. <span id="checkout-total">0</span></h3>
@@ -396,6 +397,35 @@
 
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="rating-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-btn" onclick="document.getElementById('rating-modal').style.display='none'">&times;</span>
+            <h2 style="margin-top:0;"><i class="fa-solid fa-star" style="color:var(--accent-color);"></i> Rate Product</h2>
+            <div class="admin-form" style="flex-direction: column;">
+                <input type="hidden" id="rating-product-id">
+                
+                <label style="font-weight:bold; color:var(--text-primary); margin-bottom:5px;">Star Rating (1-5)</label>
+                <div style="display:flex; gap:10px; margin-bottom:15px;" id="star-rating-container">
+                    <button class="action-btn" style="flex:1; background:var(--search-bg); color:var(--text-primary);" onclick="setRatingStars(1)">⭐ 1</button>
+                    <button class="action-btn" style="flex:1; background:var(--search-bg); color:var(--text-primary);" onclick="setRatingStars(2)">⭐ 2</button>
+                    <button class="action-btn" style="flex:1; background:var(--search-bg); color:var(--text-primary);" onclick="setRatingStars(3)">⭐ 3</button>
+                    <button class="action-btn" style="flex:1; background:var(--search-bg); color:var(--text-primary);" onclick="setRatingStars(4)">⭐ 4</button>
+                    <button class="action-btn" style="flex:1; background:var(--accent-color); color:white;" onclick="setRatingStars(5)" id="star-btn-5">⭐ 5</button>
+                </div>
+                <input type="hidden" id="rating-score" value="5">
+
+                <label style="font-weight:bold; color:var(--text-primary); margin-bottom:5px;">Your Review</label>
+                <textarea id="rating-comment" placeholder="Tell others about your experience..." rows="4" required style="padding:10px; border-radius:5px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-family:'Outfit';"></textarea>
+                
+                <label style="font-weight:bold; color:var(--text-primary); margin-top:15px; margin-bottom:5px;">Add Photo (Optional)</label>
+                <input type="file" id="rating-photo" accept="image/*" style="margin-bottom:20px;">
+                
+                <button class="cta-button" onclick="submitProductRating()">Submit Review</button>
             </div>
         </div>
     </div>

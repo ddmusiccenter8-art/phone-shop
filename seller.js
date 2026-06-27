@@ -5,7 +5,7 @@ if (currentUser && currentUser.role === 'seller') {
 }
 
 const vendorId = currentUser ? currentUser.vendorId : null;
-const PLATFORM_COMMISSION_RATE = 0.10; // 10%
+const PLATFORM_COMMISSION_RATE = parseFloat(localStorage.getItem('VASIZ_COMMISSION') || '10') / 100;
 
 document.addEventListener('DOMContentLoaded', () => {
     if(!vendorId) return;
@@ -253,7 +253,10 @@ function renderSellerOrders() {
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${order.trackingId || order.id}</td>
+                <td>
+                    ${order.trackingId || order.id}<br>
+                    <span style="font-size:0.75rem; background:var(--search-bg); padding:2px 5px; border-radius:3px;">${order.paymentMethod || 'Cash on Delivery'}</span>
+                </td>
                 <td>${order.customerName}</td>
                 <td>${itemNames}</td>
                 <td>Rs. ${myEarningsForOrder.toLocaleString()}</td>

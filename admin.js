@@ -40,6 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
     calculateGlobalStats();
     renderSellerApprovals();
 
+    // Init Super Admin Settings
+    const userStr = localStorage.getItem('VASIZ_user');
+    if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user.role === 'superadmin') {
+            document.getElementById('superadmin-settings').style.display = 'block';
+            const currentComm = parseFloat(localStorage.getItem('VASIZ_COMMISSION') || '10');
+            document.getElementById('platform-commission').value = currentComm;
+        }
+    }
+
     // Admin Search functionality
     const adminSearch = document.getElementById('admin-search');
     if (adminSearch) {
@@ -283,17 +294,56 @@ function calculateGlobalStats() {
     const allOrders = getOrders();
     let totalSales = 0;
     
+    // Track item sales
+    const itemSales = {};
+    
     allOrders.forEach(order => {
         totalSales += order.total || 0;
+        
+        // Count sold items
+        if(order.items) {
+            order.items.forEach(item => {
+                if(!itemSales[item.id]) {
+                    itemSales[item.id] = { name: item.name, quantity: 0, revenue: 0 };
+                }
+                itemSales[item.id].quantity += (item.quantity || 1);
+                itemSales[item.id].revenue += ((item.price || 0) * (item.quantity || 1));
+            });
+        }
     });
     
-    const commission = totalSales * 0.10; // 10%
+    // Sort and render top sellers
+    const sortedItems = Object.values(itemSales).sort((a, b) => b.quantity - a.quantity).slice(0, 5);
+    const topSellingBody = document.getElementById('top-selling-table-body');
+    if(topSellingBody) {
+        topSellingBody.innerHTML = '';
+        if(sortedItems.length === 0) {
+            topSellingBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No sales data available.</td></tr>';
+        } else {
+            sortedItems.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td><strong>${item.quantity}</strong></td>
+                    <td>Rs. ${item.revenue.toLocaleString()}</td>
+                `;
+                topSellingBody.appendChild(tr);
+            });
+        }
+    }
+    
+    const commissionRate = parseFloat(localStorage.getItem('VASIZ_COMMISSION') || '10') / 100;
+    const commission = totalSales * commissionRate;
     
     const users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
     const sellers = users.filter(u => u.role === 'seller');
     
     document.getElementById('global-sales').innerText = `Rs. ${totalSales.toLocaleString()}`;
-    document.getElementById('global-commission').innerText = `Rs. ${commission.toLocaleString()}`;
+    const commElement = document.getElementById('global-commission');
+    if(commElement) {
+        commElement.innerText = `Rs. ${commission.toLocaleString()}`;
+        commElement.parentElement.querySelector('h4').innerText = `Total Commission (${commissionRate * 100}%)`;
+    }
     document.getElementById('global-sellers').innerText = sellers.length;
 }
 
@@ -445,7 +495,10 @@ function renderOrdersTable() {
         const itemNames = order.items.map(i => i.name).join(', ');
         
         tr.innerHTML = `
-            <td><strong>${order.id}</strong></td>
+            <td>
+                <strong>${order.id}</strong><br>
+                <span style="font-size:0.8rem; background:var(--search-bg); padding:2px 5px; border-radius:3px;">${order.paymentMethod || 'Cash on Delivery'}</span>
+            </td>
             <td>
                 ${order.customerName}<br>
                 <small style="color:var(--text-secondary);">${order.customerPhone}</small><br>
@@ -455,13 +508,17 @@ function renderOrdersTable() {
             <td>Rs. ${order.total.toLocaleString()}</td>
             <td>${order.date}</td>
             <td>
-                <select onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 5px; font-size: 0.9rem;">
+                <select onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 5px; font-size: 0.9rem; width:100%; margin-bottom:5px;">
                     <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
                     <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
                     <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
                     <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
                     <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
                 </select>
+                <div style="display:flex; gap:5px; margin-top:5px;">
+                    <button onclick="printWaybill('${order.id}')" style="flex:1; background:#3b82f6; color:white; border:none; padding:4px 0; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-print"></i> Waybill</button>
+                    <button onclick="printCustomerInvoice('${order.id}')" style="flex:1; background:transparent; border:1px solid var(--accent-color); color:var(--accent-color); padding:4px 0; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
