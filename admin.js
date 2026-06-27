@@ -92,9 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const brandSelect = document.getElementById('new-brand').value;
             const brand = brandSelect === '_add_new_' ? document.getElementById('custom-brand').value : (brandSelect || '');
             const condition = document.getElementById('new-condition').value || '';
-            const weight = document.getElementById('new-weight').value || '';
-            const dimensions = document.getElementById('new-dimensions').value || '';
-            const packagingSize = document.getElementById('new-packaging').value || '';
+            const weightGrams = parseInt(document.getElementById('new-weight-grams').value) || 0;
+            const lengthCm = parseInt(document.getElementById('new-length-cm').value) || 0;
+            const widthCm = parseInt(document.getElementById('new-width-cm').value) || 0;
+            const heightCm = parseInt(document.getElementById('new-height-cm').value) || 0;
             
             const catSelect = document.getElementById('new-category').value;
             const category = catSelect === '_add_new_' ? document.getElementById('custom-category').value : catSelect;
@@ -118,15 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imageFile) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    saveNewProduct(name, price, category, desc, warranty, stock, brand, condition, weight, dimensions, packagingSize, expDate, manufacturer, pharmacyLicenseUrl, event.target.result);
+                    saveNewProduct(name, price, category, desc, warranty, stock, brand, condition, weightGrams, lengthCm, widthCm, heightCm, expDate, manufacturer, pharmacyLicenseUrl, event.target.result);
                 };
                 reader.readAsDataURL(imageFile);
             } else {
-                saveNewProduct(name, price, category, desc, warranty, stock, brand, condition, weight, dimensions, packagingSize, expDate, manufacturer, pharmacyLicenseUrl, "");
+                saveNewProduct(name, price, category, desc, warranty, stock, brand, condition, weightGrams, lengthCm, widthCm, heightCm, expDate, manufacturer, pharmacyLicenseUrl, "");
             }
         });
         
-        function saveNewProduct(name, price, category, desc, warranty, stock, brand, condition, weight, dimensions, packagingSize, expDate, manufacturer, pharmacyLicenseUrl, imageUrl) {
+        function saveNewProduct(name, price, category, desc, warranty, stock, brand, condition, weightGrams, lengthCm, widthCm, heightCm, expDate, manufacturer, pharmacyLicenseUrl, imageUrl) {
             let products = getProducts();
             const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
             
@@ -149,9 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 stock: stock,
                 brand: brand,
                 condition: condition,
-                weight: weight,
-                dimensions: dimensions,
-                packagingSize: packagingSize,
+                weightGrams: weightGrams,
+                lengthCm: lengthCm,
+                widthCm: widthCm,
+                heightCm: heightCm,
                 expDate: expDate,
                 manufacturer: manufacturer,
                 pharmacyLicenseUrl: pharmacyLicenseUrl,
