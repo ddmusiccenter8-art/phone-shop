@@ -15,8 +15,8 @@
             window.location.replace('index.html');
         } else {
             const user = JSON.parse(userStr);
-            if(user.role !== 'superadmin') {
-                alert("Access Denied! You do not have Super Admin privileges.");
+            if(user.role !== 'superadmin' && user.role !== 'admin') {
+                alert("Access Denied! You do not have Admin privileges.");
                 window.location.replace('index.html');
             }
         }
