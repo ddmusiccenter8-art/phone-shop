@@ -551,6 +551,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert("You must agree to the Seller Terms & Conditions.");
                     return;
                 }
+                
+                const faceBase64 = document.getElementById('reg-face-base64') ? document.getElementById('reg-face-base64').value : '';
+                const nicBase64 = document.getElementById('reg-nic-base64') ? document.getElementById('reg-nic-base64').value : '';
+                
+                if (!faceBase64) {
+                    alert("Please capture your Live Face Photo.");
+                    return;
+                }
+                if (!nicBase64) {
+                    alert("Please capture your Live NIC Photo.");
+                    return;
+                }
+                
                 agreedToTerms = true;
                 
                 const readFileAsDataURL = (file) => new Promise((resolve) => {
@@ -560,10 +573,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     reader.readAsDataURL(file);
                 });
                 
-                const nicFile = document.getElementById('reg-nic-doc').files[0];
                 const tradeFile = document.getElementById('reg-trade-doc').files[0];
-                nicDocUrl = await readFileAsDataURL(nicFile);
+                if(!tradeFile) {
+                    alert("Please upload your Trade/Business License (BR).");
+                    return;
+                }
+                
+                nicDocUrl = nicBase64; // Use the live photo
                 tradeDocUrl = await readFileAsDataURL(tradeFile);
+                var facePhotoUrl = faceBase64;
             }
             
             // Collect bank details if seller
@@ -578,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const sellerStatus = role === 'seller' ? 'pending_approval' : null;
-            const newUser = { loginId, password, name, phone: fullPhone, address: fullAddress, role, vendorId, nicDocUrl, tradeDocUrl, agreedToTerms, bankDetails, sellerStatus, registeredDate: new Date().toLocaleDateString() };
+            const newUser = { loginId, password, name, phone: fullPhone, address: fullAddress, role, vendorId, nicDocUrl, tradeDocUrl, facePhotoUrl: (typeof facePhotoUrl !== 'undefined' ? facePhotoUrl : null), agreedToTerms, bankDetails, sellerStatus, registeredDate: new Date().toLocaleDateString() };
             
             users.push(newUser);
             localStorage.setItem('VASIZ_users', JSON.stringify(users));
@@ -1051,3 +1069,81 @@ function closeMobileCategories() {
     if (menu) menu.style.display = 'none';
 }
 
+// ============================
+// LIVE CAMERA CAPTURE LOGIC
+// ============================
+let activeStreams = {};
+
+async function startCamera(type) {
+    const video = document.getElementById(`${type}-video`);
+    const cameraContainer = document.getElementById(`${type}-camera-container`);
+    const startBtn = document.getElementById(`start-${type}-btn`);
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        video.srcObject = stream;
+        activeStreams[type] = stream;
+        
+        cameraContainer.style.display = 'flex';
+        startBtn.style.display = 'none';
+    } catch (err) {
+        console.error("Camera access error:", err);
+        alert("Unable to access camera. Please make sure you have a camera and have granted browser permissions.");
+    }
+}
+
+function capturePhoto(type) {
+    const video = document.getElementById(`${type}-video`);
+    const canvas = document.getElementById('camera-canvas');
+    const preview = document.getElementById(`${type}-preview`);
+    const cameraContainer = document.getElementById(`${type}-camera-container`);
+    const previewContainer = document.getElementById(`${type}-preview-container`);
+    const hiddenInput = document.getElementById(`reg-${type}-base64`);
+    
+    if (!video.srcObject) return;
+    
+    // Set canvas dimensions to match video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw current frame to canvas
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Convert to base64
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.8); // 0.8 quality to save space
+    
+    // Set preview and hidden input
+    preview.src = dataUrl;
+    hiddenInput.value = dataUrl;
+    
+    // Stop camera stream
+    stopCamera(type);
+    
+    // Switch UI
+    cameraContainer.style.display = 'none';
+    previewContainer.style.display = 'flex';
+}
+
+function retakePhoto(type) {
+    document.getElementById(`${type}-preview-container`).style.display = 'none';
+    document.getElementById(`reg-${type}-base64`).value = '';
+    startCamera(type);
+}
+
+function stopCamera(type) {
+    if (activeStreams[type]) {
+        activeStreams[type].getTracks().forEach(track => track.stop());
+        delete activeStreams[type];
+    }
+}
+
+// Ensure cameras stop if modal is closed
+const origCloseModal = window.onclick;
+window.onclick = function(event) {
+    if (event.target.classList && event.target.classList.contains('modal')) {
+        stopCamera('face');
+        stopCamera('nic');
+    }
+    if (origCloseModal) origCloseModal(event);
+}

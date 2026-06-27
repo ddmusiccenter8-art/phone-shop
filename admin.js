@@ -532,9 +532,14 @@ function renderSellerApprovals() {
             '<span style="color:#ef4444;">No bank details</span>';
 
         const docsHtml = `
-            ${seller.nicDocUrl ? '<span style="color:#10b981; font-size:0.8rem;"><i class="fa-solid fa-file-circle-check"></i> NIC</span>' : '<span style="color:#ef4444; font-size:0.8rem;"><i class="fa-solid fa-file-circle-xmark"></i> No NIC</span>'}
-            <br>
-            ${seller.tradeDocUrl ? '<span style="color:#10b981; font-size:0.8rem;"><i class="fa-solid fa-file-circle-check"></i> Trade License</span>' : '<span style="color:#ef4444; font-size:0.8rem;"><i class="fa-solid fa-file-circle-xmark"></i> No License</span>'}
+            <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                ${seller.facePhotoUrl ? `<img src="${seller.facePhotoUrl}" title="Live Face Photo" onclick="viewDoc('${seller.facePhotoUrl}', 'Seller Face Photo')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No Face</span>'}
+                
+                ${seller.nicDocUrl ? `<img src="${seller.nicDocUrl}" title="NIC Document" onclick="viewDoc('${seller.nicDocUrl}', 'NIC Document')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No NIC</span>'}
+                
+                ${seller.tradeDocUrl ? `<img src="${seller.tradeDocUrl}" title="Trade License (BR)" onclick="viewDoc('${seller.tradeDocUrl}', 'Trade License (BR)')" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;cursor:pointer;">` : '<span style="color:#ef4444; font-size:0.7rem;">No BR</span>'}
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-secondary); margin-top:3px;">Click image to enlarge</div>
         `;
 
         tr.innerHTML = `
@@ -549,6 +554,38 @@ function renderSellerApprovals() {
         `;
         tbody.appendChild(tr);
     });
+}
+
+function viewDoc(url, title) {
+    // Check if it's a PDF (Trade doc could be PDF)
+    if (url.startsWith('data:application/pdf')) {
+        const win = window.open();
+        win.document.write(`<iframe src="${url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+        return;
+    }
+    
+    // Create image modal
+    const overlay = document.createElement('div');
+    overlay.style = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column;';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '<i class="fa-solid fa-times"></i> Close';
+    closeBtn.style = 'position:absolute; top:20px; right:20px; background:#ef4444; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:1rem;';
+    closeBtn.onclick = () => document.body.removeChild(overlay);
+    
+    const h3 = document.createElement('h3');
+    h3.innerText = title;
+    h3.style = 'color:white; margin-bottom:15px;';
+    
+    const img = document.createElement('img');
+    img.src = url;
+    img.style = 'max-width:90%; max-height:80%; object-fit:contain; border:2px solid white; border-radius:8px;';
+    
+    overlay.appendChild(closeBtn);
+    overlay.appendChild(h3);
+    overlay.appendChild(img);
+    
+    document.body.appendChild(overlay);
 }
 
 function approveSeller(loginId) {
