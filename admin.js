@@ -459,6 +459,7 @@ function renderOrdersTable() {
                     <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
                     <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
                     <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                    <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
                     <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
                 </select>
             </td>
@@ -471,6 +472,18 @@ function updateOrderStatus(orderId, newStatus) {
     const orders = getOrders();
     const orderIndex = orders.findIndex(o => o.id === orderId);
     if(orderIndex !== -1) {
+        if(newStatus === 'Shipped') {
+            const courierName = prompt("Enter Courier Name (e.g. Domex, PromptX):", orders[orderIndex].courierName || "");
+            const trackingId = prompt("Enter Courier Tracking ID (if available):", orders[orderIndex].courierTrackingId || "");
+            
+            if (courierName !== null) {
+                orders[orderIndex].courierName = courierName;
+            }
+            if (trackingId !== null) {
+                orders[orderIndex].courierTrackingId = trackingId;
+            }
+        }
+        
         orders[orderIndex].status = newStatus;
         saveOrders(orders);
         if(window.fbSaveOrder) window.fbSaveOrder(orders[orderIndex]);

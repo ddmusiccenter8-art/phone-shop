@@ -43,6 +43,10 @@
                     <i class="fa-solid fa-bars"></i>
                     <span>Menu</span>
                 </button>
+                <button class="action-icon-btn" onclick="document.getElementById('track-modal').style.display='block'">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Track</span>
+                </button>
                 <button class="action-icon-btn" id="theme-toggle-btn" onclick="toggleTheme()">
                     <i class="fa-solid fa-moon" id="theme-icon"></i>
                     <span>Theme</span>
@@ -166,6 +170,22 @@
             <div class="cart-total">
                 <h3>Total: Rs. <span id="cart-total-price">0</span></h3>
                 <button class="cta-button" onclick="openCheckout()">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Track Order Modal -->
+    <div id="track-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="document.getElementById('track-modal').style.display='none'">&times;</span>
+            <h2 style="margin-top:0;"><i class="fa-solid fa-location-dot"></i> Track Your Order</h2>
+            <p style="color:var(--text-secondary); margin-bottom:20px;">Enter your Tracking ID (e.g., VASIZ-TRK-123456) to view the live status of your delivery.</p>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <input type="text" id="track-id-input" placeholder="VASIZ-TRK-XXXXXX" style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary);">
+                <button onclick="trackOrderLookup()" class="cta-button" style="padding:12px 25px;">Track</button>
+            </div>
+            <div id="track-result-container" style="display:none; background:var(--bg-color); padding:20px; border-radius:8px; border:1px solid var(--border-color);">
+                <!-- Injected by JS -->
             </div>
         </div>
     </div>

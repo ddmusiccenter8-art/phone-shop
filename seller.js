@@ -253,11 +253,11 @@ function renderSellerOrders() {
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${order.id}</td>
+                <td>${order.trackingId || order.id}</td>
                 <td>${order.customerName}</td>
                 <td>${itemNames}</td>
                 <td>Rs. ${myEarningsForOrder.toLocaleString()}</td>
-                <td>${order.date}</td>
+                <td>${order.date} <br><button onclick="printWaybill('${order.id}')" style="background:#3b82f6; color:white; border:none; padding:4px 10px; border-radius:5px; font-size:0.75rem; cursor:pointer; margin-top:5px;"><i class="fa-solid fa-print"></i> Waybill</button></td>
             `;
             tbody.appendChild(tr);
         }

@@ -647,6 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const newOrder = {
                 id: 'ORD-' + Math.floor(Math.random() * 10000),
+                trackingId: 'VASIZ-TRK-' + Math.floor(100000 + Math.random() * 900000),
                 date: new Date().toLocaleDateString(),
                 customerName: name,
                 customerAddress: address,
@@ -924,28 +925,37 @@ function renderMyOrders() {
         let pColor = '#e2e8f0'; // default border
         let prColor = '#e2e8f0'; 
         let sColor = '#e2e8f0';
+        let oColor = '#e2e8f0'; // Out for delivery
         let dColor = '#e2e8f0';
 
         if(order.status === 'Pending') {
-            progress = 12.5; 
+            progress = 10; 
             pColor = 'var(--secondary-accent)';
         } else if(order.status === 'Processing') {
             statusColor = '#3b82f6'; 
-            progress = 37.5; 
+            progress = 30; 
             pColor = 'var(--secondary-accent)'; 
             prColor = 'var(--secondary-accent)';
         } else if(order.status === 'Shipped') {
             statusColor = '#8b5cf6'; 
-            progress = 62.5;
+            progress = 50;
             pColor = 'var(--secondary-accent)'; 
             prColor = 'var(--secondary-accent)'; 
             sColor = 'var(--secondary-accent)';
+        } else if(order.status === 'Out for Delivery') {
+            statusColor = '#f97316'; 
+            progress = 70;
+            pColor = 'var(--secondary-accent)'; 
+            prColor = 'var(--secondary-accent)'; 
+            sColor = 'var(--secondary-accent)';
+            oColor = 'var(--secondary-accent)';
         } else if(order.status === 'Delivered') {
             statusColor = '#10b981'; 
             progress = 100;
             pColor = 'var(--secondary-accent)'; 
             prColor = 'var(--secondary-accent)'; 
             sColor = 'var(--secondary-accent)'; 
+            oColor = 'var(--secondary-accent)'; 
             dColor = 'var(--secondary-accent)';
         }
         
@@ -962,7 +972,10 @@ function renderMyOrders() {
         div.style = `border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; background: var(--search-bg);`;
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
-                <strong style="color:var(--text-primary); font-size:1.1rem;">${order.id}</strong>
+                <div>
+                    <strong style="color:var(--text-primary); font-size:1.1rem; margin-right:10px;">${order.trackingId || order.id}</strong>
+                    <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--accent-color); color:var(--accent-color); padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+                </div>
                 <span style="background:${statusColor}; color:white; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">${order.status}</span>
             </div>
             <p style="margin:5px 0; color:var(--text-secondary); font-size:0.9rem;"><strong>Date:</strong> ${order.date}</p>
@@ -976,23 +989,27 @@ function renderMyOrders() {
             
             <!-- Tracking Timeline -->
             <div style="margin-top: 25px; position: relative;">
-                <div style="position:absolute; top:12px; left:12.5%; right:12.5%; height:4px; background:var(--border-color); z-index:1;"></div>
-                <div style="position:absolute; top:12px; left:12.5%; width:${progress - 12.5}%; height:4px; background:var(--secondary-accent); z-index:2; transition: width 0.5s;"></div>
+                <div style="position:absolute; top:12px; left:10%; right:10%; height:4px; background:var(--border-color); z-index:1;"></div>
+                <div style="position:absolute; top:12px; left:10%; width:${progress - 10}%; height:4px; background:var(--secondary-accent); z-index:2; transition: width 0.5s;"></div>
                 
                 <div style="display:flex; justify-content:space-between; position:relative; z-index:3;">
-                    <div style="text-align:center; width:25%;">
+                    <div style="text-align:center; width:20%;">
                         <div style="width:28px; height:28px; border-radius:50%; background:${pColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-clipboard-list"></i></div>
                         <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Pending</p>
                     </div>
-                    <div style="text-align:center; width:25%;">
+                    <div style="text-align:center; width:20%;">
                         <div style="width:28px; height:28px; border-radius:50%; background:${prColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-box-open"></i></div>
                         <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Processing</p>
                     </div>
-                    <div style="text-align:center; width:25%;">
+                    <div style="text-align:center; width:20%;">
                         <div style="width:28px; height:28px; border-radius:50%; background:${sColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-truck-fast"></i></div>
                         <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Shipped</p>
                     </div>
-                    <div style="text-align:center; width:25%;">
+                    <div style="text-align:center; width:20%;">
+                        <div style="width:28px; height:28px; border-radius:50%; background:${oColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-motorcycle"></i></div>
+                        <p style="font-size:0.7rem; margin-top:5px; color:var(--text-primary); font-weight:bold; line-height:1;">Out for<br>Delivery</p>
+                    </div>
+                    <div style="text-align:center; width:20%;">
                         <div style="width:28px; height:28px; border-radius:50%; background:${dColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-house-circle-check"></i></div>
                         <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Delivered</p>
                     </div>
@@ -1211,4 +1228,240 @@ function renderDesktopSidebar() {
 // Call init functions globally when script loads
 if (document.getElementById('desktop-category-list')) {
     renderDesktopSidebar();
+}
+
+// Track Order Lookup
+function trackOrderLookup() {
+    const input = document.getElementById('track-id-input').value.trim();
+    const container = document.getElementById('track-result-container');
+    if(!input) {
+        alert("Please enter a Tracking ID");
+        return;
+    }
+    
+    const orders = getOrders();
+    const order = orders.find(o => o.trackingId === input || o.id === input);
+    
+    if(!order) {
+        container.style.display = 'block';
+        container.innerHTML = `<p style="color:#ef4444; font-weight:bold;"><i class="fa-solid fa-circle-exclamation"></i> No order found with Tracking ID: ${input}</p>`;
+        return;
+    }
+    
+    let statusColor = '#f59e0b';
+    let progress = 10;
+    let pColor = 'var(--secondary-accent)';
+    let prColor = '#e2e8f0'; 
+    let sColor = '#e2e8f0';
+    let oColor = '#e2e8f0';
+    let dColor = '#e2e8f0';
+
+    if(order.status === 'Processing') {
+        statusColor = '#3b82f6'; progress = 30; 
+        prColor = 'var(--secondary-accent)';
+    } else if(order.status === 'Shipped') {
+        statusColor = '#8b5cf6'; progress = 50;
+        prColor = 'var(--secondary-accent)'; sColor = 'var(--secondary-accent)';
+    } else if(order.status === 'Out for Delivery') {
+        statusColor = '#f97316'; progress = 70;
+        prColor = 'var(--secondary-accent)'; sColor = 'var(--secondary-accent)'; oColor = 'var(--secondary-accent)';
+    } else if(order.status === 'Delivered') {
+        statusColor = '#10b981'; progress = 100;
+        prColor = 'var(--secondary-accent)'; sColor = 'var(--secondary-accent)'; oColor = 'var(--secondary-accent)'; dColor = 'var(--secondary-accent)';
+    }
+    
+    const courierInfo = order.courierName ? `<p style="margin-top:15px; font-size:0.9rem; color:var(--text-secondary);"><strong>Courier:</strong> ${order.courierName} <br><strong>Courier Tracking ID:</strong> ${order.courierTrackingId || 'N/A'}</p>` : '';
+
+    container.style.display = 'block';
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:20px;">
+            <strong style="color:var(--text-primary); font-size:1.1rem;">${order.trackingId || order.id}</strong>
+            <span style="background:${statusColor}; color:white; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">${order.status}</span>
+        </div>
+        
+        <!-- Tracking Timeline -->
+        <div style="position: relative; margin-bottom: 30px;">
+            <div style="position:absolute; top:12px; left:10%; right:10%; height:4px; background:var(--border-color); z-index:1;"></div>
+            <div style="position:absolute; top:12px; left:10%; width:${progress - 10}%; height:4px; background:var(--secondary-accent); z-index:2;"></div>
+            
+            <div style="display:flex; justify-content:space-between; position:relative; z-index:3;">
+                <div style="text-align:center; width:20%;">
+                    <div style="width:28px; height:28px; border-radius:50%; background:${pColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Pending</p>
+                </div>
+                <div style="text-align:center; width:20%;">
+                    <div style="width:28px; height:28px; border-radius:50%; background:${prColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-box-open"></i></div>
+                    <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Processing</p>
+                </div>
+                <div style="text-align:center; width:20%;">
+                    <div style="width:28px; height:28px; border-radius:50%; background:${sColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-truck-fast"></i></div>
+                    <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Shipped</p>
+                </div>
+                <div style="text-align:center; width:20%;">
+                    <div style="width:28px; height:28px; border-radius:50%; background:${oColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-motorcycle"></i></div>
+                    <p style="font-size:0.7rem; margin-top:5px; color:var(--text-primary); font-weight:bold; line-height:1;">Out for<br>Delivery</p>
+                </div>
+                <div style="text-align:center; width:20%;">
+                    <div style="width:28px; height:28px; border-radius:50%; background:${dColor}; color:white; line-height:28px; margin:0 auto; font-size:0.8rem;"><i class="fa-solid fa-house-circle-check"></i></div>
+                    <p style="font-size:0.75rem; margin-top:5px; color:var(--text-primary); font-weight:bold;">Delivered</p>
+                </div>
+            </div>
+        </div>
+        ${courierInfo}
+        <p style="margin-top:15px; font-size:0.9rem; color:var(--text-secondary);"><strong>Order Date:</strong> ${order.date}</p>
+        <p style="margin-top:5px; font-size:0.9rem; color:var(--text-secondary);"><strong>Deliver To:</strong> ${order.customerName}, ${order.customerAddress}</p>
+    `;
+}
+
+// Print Invoice Function
+function printCustomerInvoice(orderId) {
+    const orders = getOrders();
+    const order = orders.find(o => o.id === orderId);
+    if(!order) return;
+    
+    let itemsHtml = order.items.map(i => `
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0;">${i.name}</td>
+            <td style="padding: 10px 0; text-align:center;">${i.quantity || 1}</td>
+            <td style="padding: 10px 0; text-align:right;">Rs. ${i.price.toLocaleString()}</td>
+            <td style="padding: 10px 0; text-align:right;">Rs. ${(i.price * (i.quantity || 1)).toLocaleString()}</td>
+        </tr>
+    `).join('');
+
+    const invoiceWindow = window.open('', '_blank');
+    invoiceWindow.document.write(`
+        <html>
+        <head>
+            <title>Invoice - ${order.id}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
+                .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #10b981; padding-bottom: 20px; margin-bottom: 30px; }
+                .logo { font-size: 24px; font-weight: bold; color: #10b981; }
+                .invoice-details { text-align: right; }
+                .bill-to { margin-bottom: 30px; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                th { text-align: left; padding: 10px 0; border-bottom: 2px solid #eee; color: #666; }
+                .total { text-align: right; font-size: 1.2rem; font-weight: bold; color: #10b981; }
+                @media print { button { display: none; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div>
+                    <div class="logo">VASIZ MARKETPLACE</div>
+                    <p style="margin: 5px 0; color: #666;">Colombo, Sri Lanka<br>info@vasiz.com<br>0773705309</p>
+                </div>
+                <div class="invoice-details">
+                    <h2 style="margin: 0; color: #333; text-transform: uppercase;">Invoice</h2>
+                    <p style="margin: 5px 0;"><strong>Order ID:</strong> ${order.id}</p>
+                    <p style="margin: 5px 0;"><strong>Tracking ID:</strong> ${order.trackingId || 'N/A'}</p>
+                    <p style="margin: 5px 0;"><strong>Date:</strong> ${order.date}</p>
+                </div>
+            </div>
+            
+            <div class="bill-to">
+                <h3 style="margin-top: 0; color: #666;">BILL TO:</h3>
+                <p style="margin: 5px 0;"><strong>${order.customerName}</strong></p>
+                <p style="margin: 5px 0;">${order.customerAddress}</p>
+                <p style="margin: 5px 0;">${order.customerPhone}</p>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Description</th>
+                        <th style="text-align:center;">Qty</th>
+                        <th style="text-align:right;">Unit Price</th>
+                        <th style="text-align:right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+            
+            <div class="total">
+                Total Amount: Rs. ${order.total.toLocaleString()}
+            </div>
+            
+            <div style="margin-top: 50px; text-align: center; color: #666; font-size: 0.9rem;">
+                <p>Thank you for shopping with VASIZ!</p>
+            </div>
+            
+            <div style="text-align:center; margin-top: 30px;">
+                <button onclick="window.print()" style="padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">Print Invoice</button>
+            </div>
+        </body>
+        </html>
+    `);
+    invoiceWindow.document.close();
+}
+
+// Print Waybill (Shipping Label)
+function printWaybill(orderId) {
+    const orders = getOrders();
+    const order = orders.find(o => o.id === orderId);
+    if(!order) return;
+    
+    const waybillWindow = window.open('', '_blank');
+    waybillWindow.document.write(`
+        <html>
+        <head>
+            <title>Waybill - ${order.trackingId || order.id}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; color: #000; display:flex; justify-content:center; }
+                .label-container { width: 10cm; border: 2px solid #000; padding: 15px; border-radius: 8px; position:relative; }
+                .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; text-align: center; }
+                .logo { font-size: 20px; font-weight: bold; }
+                .barcode { margin: 10px 0; text-align: center; padding: 10px; border: 1px dashed #000; font-family: monospace; font-size: 18px; letter-spacing: 2px; }
+                .section { margin-bottom: 15px; }
+                .section-title { font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px; }
+                .text-bold { font-weight: bold; font-size: 14px; }
+                @media print { button { display: none; } .label-container { border: none; width: 100%; } body { padding:0; } }
+            </style>
+        </head>
+        <body>
+            <div class="label-container">
+                <div class="header">
+                    <div class="logo">VASIZ EXPRESS</div>
+                    <div style="font-size:12px;">Standard Delivery</div>
+                </div>
+                
+                <div class="barcode">
+                    *${order.trackingId || order.id}*<br>
+                    <span style="font-size:12px; letter-spacing:0;">${order.trackingId || order.id}</span>
+                </div>
+                
+                <div class="section" style="border-bottom:1px solid #ccc; padding-bottom:10px;">
+                    <div class="section-title">TO (CONSIGNEE):</div>
+                    <div class="text-bold" style="font-size:16px;">${order.customerName}</div>
+                    <div style="font-size:14px; margin-top:5px;">${order.customerAddress}</div>
+                    <div class="text-bold" style="margin-top:5px;">TEL: ${order.customerPhone}</div>
+                </div>
+                
+                <div class="section" style="border-bottom:1px solid #ccc; padding-bottom:10px; display:flex; justify-content:space-between;">
+                    <div>
+                        <div class="section-title">COD AMOUNT:</div>
+                        <div class="text-bold" style="font-size:18px;">Rs. ${order.total.toLocaleString()}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="section-title">ORDER DATE:</div>
+                        <div class="text-bold">${order.date}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">SENDER:</div>
+                    <div class="text-bold">VASIZ Marketplace Vendor</div>
+                    <div style="font-size:12px;">Items: ${order.items.length} piece(s)</div>
+                </div>
+                
+                <div style="text-align:center; margin-top: 20px;">
+                    <button onclick="window.print()" style="padding: 8px 15px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer;">Print Label</button>
+                </div>
+            </div>
+        </body>
+        </html>
+    `);
+    waybillWindow.document.close();
 }
