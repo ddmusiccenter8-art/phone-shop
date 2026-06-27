@@ -397,6 +397,30 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Disputes Section -->
+        <div class="admin-section" style="margin-top: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2><i class="fa-solid fa-flag"></i> Customer Disputes</h2>
+                <span id="open-dispute-count" style="background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;"></span>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Dispute ID</th>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Reason</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="disputes-table-body">
+                    <!-- Rows populated by JS -->
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <script src="data.js"></script>

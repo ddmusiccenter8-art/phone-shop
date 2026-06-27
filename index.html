@@ -153,6 +153,12 @@
             </div>
         </section>
 
+        <!-- Recently Viewed Products -->
+        <section id="recently-viewed-section" style="display:none; background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 20px; padding: 20px;">
+            <h3 style="margin-top:0; margin-bottom: 15px; color: var(--text-primary); font-size: 1.2rem;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent-color);"></i> Recently Viewed</h3>
+            <div id="recently-viewed-grid" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;"></div>
+        </section>
+
         <!-- Regular Products -->
         <div id="main-content">
             <!-- Product sections dynamically injected here -->
@@ -166,6 +172,16 @@
             <h2>Your Shopping Cart</h2>
             <div id="cart-items">
                 <p>Your cart is empty.</p>
+            </div>
+            <!-- Free Shipping Progress Bar -->
+            <div id="free-shipping-bar" style="display:none; margin: 15px 0; padding: 12px 15px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-radius: 8px; border: 1px solid #a7f3d0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="font-size:0.85rem; color:#065f46; font-weight:600;"><i class="fa-solid fa-truck"></i> Free Shipping Progress</span>
+                    <span id="free-ship-text" style="font-size:0.8rem; color:#047857; font-weight:bold;"></span>
+                </div>
+                <div style="width:100%; background:#d1fae5; border-radius:10px; height:8px; overflow:hidden;">
+                    <div id="free-ship-progress" style="height:100%; background:linear-gradient(90deg, #10b981, #059669); border-radius:10px; transition: width 0.5s;"></div>
+                </div>
             </div>
             <div class="cart-total">
                 <h3>Total: Rs. <span id="cart-total-price">0</span></h3>
@@ -212,8 +228,15 @@
                     <option value="Bank Transfer">Bank Transfer</option>
                     <option value="Online Payment">Online Payment (Card/Gateway)</option>
                 </select>
+                <!-- Promo Code Section -->
+                <div style="display:flex; gap:10px; align-items:stretch;">
+                    <input type="text" id="promo-code-input" placeholder="Enter Promo Code (e.g. VASIZ10)" style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-family:'Outfit',sans-serif;">
+                    <button type="button" onclick="applyPromoCode()" style="background:var(--secondary-accent); color:white; border:none; padding:12px 20px; border-radius:8px; font-weight:bold; cursor:pointer; white-space:nowrap;"><i class="fa-solid fa-tag"></i> Apply</button>
+                </div>
+                <div id="promo-result" style="display:none; padding:8px 12px; border-radius:6px; font-size:0.85rem; font-weight:bold;"></div>
                 <div class="cart-total" style="border-top: none;">
                     <h3>Amount to Pay: Rs. <span id="checkout-total">0</span></h3>
+                    <p id="promo-discount-line" style="display:none; color:#10b981; font-size:0.9rem; margin:5px 0 0 0;"></p>
                 </div>
                 <button type="submit" class="cta-button" style="width: 100%; margin-top: 15px;">Place Order</button>
             </form>

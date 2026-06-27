@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFeedbacks();
     calculateGlobalStats();
     renderSellerApprovals();
+    renderDisputes();
 
     // Init Super Admin Settings
     const userStr = localStorage.getItem('VASIZ_user');
@@ -691,6 +692,93 @@ function rejectSeller(loginId) {
         if(window.fbSaveUser) window.fbSaveUser(users[userIndex]);
         renderSellerApprovals();
         alert(`Seller "${loginId}" has been REJECTED.`);
+    }
+}
+
+// ============================
+// DISPUTES MANAGEMENT
+// ============================
+function renderDisputes() {
+    const tbody = document.getElementById('disputes-table-body');
+    const countBadge = document.getElementById('open-dispute-count');
+    if (!tbody) return;
+
+    const disputes = JSON.parse(localStorage.getItem('VASIZ_disputes') || '[]');
+    
+    tbody.innerHTML = '';
+
+    if (disputes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No disputes filed yet.</td></tr>';
+        if(countBadge) countBadge.innerText = '';
+        return;
+    }
+
+    const openCount = disputes.filter(d => d.status === 'Open').length;
+    if(countBadge) {
+        countBadge.innerText = openCount > 0 ? `${openCount} Open` : 'All Resolved';
+        countBadge.style.background = openCount > 0 ? '#ef4444' : '#10b981';
+    }
+
+    // Show Open first, then Resolved
+    disputes.sort((a, b) => (a.status === 'Open' ? 0 : 1) - (b.status === 'Open' ? 0 : 1));
+
+    disputes.forEach(dispute => {
+        const tr = document.createElement('tr');
+        
+        let statusBadge = '';
+        let actionBtns = '';
+        
+        if (dispute.status === 'Open') {
+            statusBadge = '<span style="background:#ef4444; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">🔴 Open</span>';
+            actionBtns = `
+                <button class="action-btn" style="background:#10b981; margin-bottom:5px;" onclick="resolveDispute('${dispute.id}')"><i class="fa-solid fa-check"></i> Resolve</button>
+                <button class="action-btn" style="background:#3b82f6;" onclick="respondToDispute('${dispute.id}')"><i class="fa-solid fa-reply"></i> Respond</button>
+            `;
+        } else {
+            statusBadge = '<span style="background:#10b981; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">✅ Resolved</span>';
+            actionBtns = `<span style="color:var(--text-secondary); font-size:0.85rem;">${dispute.adminResponse || 'Resolved'}</span>`;
+        }
+
+        tr.innerHTML = `
+            <td><code style="background:var(--search-bg); padding:2px 6px; border-radius:4px;">${dispute.id}</code></td>
+            <td><strong>${dispute.orderId}</strong></td>
+            <td>${dispute.customerName}<br><small style="color:var(--text-secondary);">${dispute.customerPhone}</small></td>
+            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">${dispute.reason}</td>
+            <td>${dispute.date}</td>
+            <td>${statusBadge}</td>
+            <td style="display:flex; gap:5px; flex-wrap:wrap;">${actionBtns}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function resolveDispute(disputeId) {
+    if (!confirm(`Are you sure you want to mark dispute "${disputeId}" as RESOLVED?`)) return;
+    
+    const disputes = JSON.parse(localStorage.getItem('VASIZ_disputes') || '[]');
+    const index = disputes.findIndex(d => d.id === disputeId);
+    
+    if (index !== -1) {
+        disputes[index].status = 'Resolved';
+        disputes[index].adminResponse = 'Resolved by Admin on ' + new Date().toLocaleDateString();
+        localStorage.setItem('VASIZ_disputes', JSON.stringify(disputes));
+        renderDisputes();
+        alert(`Dispute "${disputeId}" has been marked as RESOLVED.`);
+    }
+}
+
+function respondToDispute(disputeId) {
+    const response = prompt(`Enter your response to dispute "${disputeId}":`);
+    if (!response || response.trim() === '') return;
+    
+    const disputes = JSON.parse(localStorage.getItem('VASIZ_disputes') || '[]');
+    const index = disputes.findIndex(d => d.id === disputeId);
+    
+    if (index !== -1) {
+        disputes[index].adminResponse = response.trim();
+        localStorage.setItem('VASIZ_disputes', JSON.stringify(disputes));
+        renderDisputes();
+        alert(`Response sent for dispute "${disputeId}".`);
     }
 }
 

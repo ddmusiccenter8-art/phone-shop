@@ -276,6 +276,9 @@ function renderCategoriesCircleGrid() {
 }
 
 function openProductModal(product) {
+    // Track Recently Viewed
+    addToRecentlyViewed(product.id);
+    
     const modal = document.getElementById('product-modal');
     const content = document.getElementById('product-details-content');
     
@@ -495,6 +498,7 @@ function updateCartDisplay() {
     }
 
     cartTotalPrice.innerText = total.toLocaleString();
+    updateFreeShippingBar();
 }
 
 // Function to remove from cart
@@ -509,6 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts();
     renderFlashSales();
     renderCategoriesCircleGrid();
+    renderRecentlyViewed();
     updateUserUI();
 
     // Search functionality
@@ -1061,6 +1066,7 @@ function renderMyOrders() {
                 <div>
                     <strong style="color:var(--text-primary); font-size:1.1rem; margin-right:10px;">${order.trackingId || order.id}</strong>
                     <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--accent-color); color:var(--accent-color); padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+                    <button onclick="openDispute('${order.id}')" style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer; margin-left:5px;"><i class="fa-solid fa-flag"></i> Dispute</button>
                 </div>
                 <span style="background:${statusColor}; color:white; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">${order.status}</span>
             </div>
@@ -1578,4 +1584,186 @@ function printWaybill(orderId) {
         </html>
     `);
     waybillWindow.document.close();
+}
+
+// ============================
+// RECENTLY VIEWED PRODUCTS
+// ============================
+function addToRecentlyViewed(productId) {
+    let viewed = JSON.parse(localStorage.getItem('VASIZ_recently_viewed') || '[]');
+    viewed = viewed.filter(id => id !== productId);
+    viewed.unshift(productId);
+    if (viewed.length > 10) viewed = viewed.slice(0, 10);
+    localStorage.setItem('VASIZ_recently_viewed', JSON.stringify(viewed));
+    renderRecentlyViewed();
+}
+
+function renderRecentlyViewed() {
+    const section = document.getElementById('recently-viewed-section');
+    const grid = document.getElementById('recently-viewed-grid');
+    if (!section || !grid) return;
+
+    const viewedIds = JSON.parse(localStorage.getItem('VASIZ_recently_viewed') || '[]');
+    const allProducts = getProducts();
+    const viewedProducts = viewedIds.map(id => allProducts.find(p => p.id === id)).filter(Boolean);
+
+    if (viewedProducts.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    grid.innerHTML = '';
+
+    viewedProducts.forEach(product => {
+        const card = document.createElement('div');
+        card.style = 'min-width:160px; max-width:170px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:10px; cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; flex-shrink:0;';
+        card.onmouseover = () => { card.style.transform = 'translateY(-3px)'; card.style.boxShadow = '0 6px 15px rgba(0,0,0,0.1)'; };
+        card.onmouseout = () => { card.style.transform = 'translateY(0)'; card.style.boxShadow = 'none'; };
+        card.onclick = () => openProductModal(product);
+
+        const imageSrc = product.image || `https://via.placeholder.com/150x100/6366f1/ffffff?text=${product.name.replace(/ /g, '+')}`;
+        const displayPrice = (product.discount && product.discount > 0) ? Math.floor(product.price * (1 - product.discount / 100)) : product.price;
+
+        card.innerHTML = `
+            <div style="width:100%; height:100px; overflow:hidden; border-radius:4px; margin-bottom:8px;">
+                <img src="${imageSrc}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-primary); margin:0; line-height:1.2; height:2.4em; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${product.name}</p>
+            <p style="font-size:0.9rem; color:var(--accent-color); font-weight:700; margin:5px 0 0 0;">Rs.${displayPrice.toLocaleString()}</p>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// ============================
+// FREE SHIPPING PROGRESS BAR
+// ============================
+const FREE_SHIPPING_THRESHOLD = 5000; // Rs. 5000 for free shipping
+
+function updateFreeShippingBar() {
+    const bar = document.getElementById('free-shipping-bar');
+    const progressEl = document.getElementById('free-ship-progress');
+    const textEl = document.getElementById('free-ship-text');
+    if (!bar || !progressEl || !textEl) return;
+
+    if (cart.length === 0) {
+        bar.style.display = 'none';
+        return;
+    }
+
+    bar.style.display = 'block';
+    const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const percentage = Math.min((cartTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+    progressEl.style.width = percentage + '%';
+
+    if (cartTotal >= FREE_SHIPPING_THRESHOLD) {
+        textEl.innerHTML = '🎉 You qualify for FREE Shipping!';
+        bar.style.background = 'linear-gradient(135deg, #d1fae5, #a7f3d0)';
+        bar.style.borderColor = '#34d399';
+    } else {
+        const remaining = FREE_SHIPPING_THRESHOLD - cartTotal;
+        textEl.innerHTML = `Add Rs. ${remaining.toLocaleString()} more for FREE Shipping`;
+    }
+}
+
+// ============================
+// PROMO CODE SYSTEM
+// ============================
+let appliedPromo = null;
+
+const PROMO_CODES = {
+    'VASIZ10': { discount: 10, type: 'percent', description: '10% off your order!' },
+    'VASIZ20': { discount: 20, type: 'percent', description: '20% off your order!' },
+    'SAVE500': { discount: 500, type: 'fixed', description: 'Rs. 500 off your order!' },
+    'SAVE1000': { discount: 1000, type: 'fixed', description: 'Rs. 1,000 off your order!' },
+    'FREESHIP': { discount: 0, type: 'freeship', description: 'Free shipping on your order!' },
+    'WELCOME': { discount: 15, type: 'percent', description: '15% Welcome Discount!' }
+};
+
+function applyPromoCode() {
+    const input = document.getElementById('promo-code-input');
+    const resultDiv = document.getElementById('promo-result');
+    const discountLine = document.getElementById('promo-discount-line');
+    if (!input || !resultDiv) return;
+
+    const code = input.value.trim().toUpperCase();
+
+    if (!code) {
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#fef2f2';
+        resultDiv.style.color = '#dc2626';
+        resultDiv.style.border = '1px solid #fecaca';
+        resultDiv.innerHTML = '<i class="fa-solid fa-xmark"></i> Please enter a promo code';
+        return;
+    }
+
+    const promo = PROMO_CODES[code];
+    if (!promo) {
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#fef2f2';
+        resultDiv.style.color = '#dc2626';
+        resultDiv.style.border = '1px solid #fecaca';
+        resultDiv.innerHTML = '<i class="fa-solid fa-xmark"></i> Invalid promo code. Please try again.';
+        appliedPromo = null;
+        recalcCheckoutTotal();
+        return;
+    }
+
+    appliedPromo = { code, ...promo };
+    resultDiv.style.display = 'block';
+    resultDiv.style.background = '#f0fdf4';
+    resultDiv.style.color = '#16a34a';
+    resultDiv.style.border = '1px solid #bbf7d0';
+    resultDiv.innerHTML = `<i class="fa-solid fa-check"></i> "${code}" applied! ${promo.description}`;
+
+    recalcCheckoutTotal();
+}
+
+function recalcCheckoutTotal() {
+    let total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const discountLine = document.getElementById('promo-discount-line');
+
+    if (appliedPromo) {
+        let discountAmount = 0;
+        if (appliedPromo.type === 'percent') {
+            discountAmount = Math.floor(total * (appliedPromo.discount / 100));
+        } else if (appliedPromo.type === 'fixed') {
+            discountAmount = appliedPromo.discount;
+        }
+        total = Math.max(0, total - discountAmount);
+
+        if (discountLine && discountAmount > 0) {
+            discountLine.style.display = 'block';
+            discountLine.innerHTML = `<i class="fa-solid fa-tag"></i> Promo "${appliedPromo.code}": -Rs. ${discountAmount.toLocaleString()} saved!`;
+        }
+    } else {
+        if (discountLine) discountLine.style.display = 'none';
+    }
+
+    document.getElementById('checkout-total').innerText = total.toLocaleString();
+}
+
+// ============================
+// DISPUTE CENTER
+// ============================
+function openDispute(orderId) {
+    const reason = prompt('Please describe the issue with your order (e.g. item not received, wrong item, damaged):');
+    if (!reason || reason.trim() === '') return;
+
+    const disputes = JSON.parse(localStorage.getItem('VASIZ_disputes') || '[]');
+    const newDispute = {
+        id: 'DSP-' + Math.floor(10000 + Math.random() * 90000),
+        orderId: orderId,
+        customerName: currentUser ? currentUser.name : 'Guest',
+        customerPhone: currentUser ? currentUser.phone : '',
+        reason: reason.trim(),
+        status: 'Open',
+        date: new Date().toLocaleDateString(),
+        adminResponse: ''
+    };
+    disputes.push(newDispute);
+    localStorage.setItem('VASIZ_disputes', JSON.stringify(disputes));
+    alert(`Dispute ${newDispute.id} has been filed successfully! Our team will review it within 24-48 hours.`);
+    renderMyOrders();
 }
