@@ -593,14 +593,10 @@ header nav a:hover {
 .hero-text-container {
     position: absolute;
     left: 40px;
-    bottom: 30px;
+    top: 40px;
     color: white;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 20px;
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
     max-width: 45%;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    padding: 0;
 }
 .hero-title {
     font-size: 2.2rem;
