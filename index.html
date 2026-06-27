@@ -275,7 +275,10 @@
                                 <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 5px 0;">Take a clear photo of your face for verification.</p>
                                 <div id="face-camera-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <video id="face-video" width="100%" style="max-width:300px; border-radius:5px; background:#000;" autoplay playsinline></video>
-                                    <button type="button" class="cta-button" onclick="capturePhoto('face')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture Photo</button>
+                                    <div style="display:flex; gap:10px; width:100%; justify-content:center;">
+                                        <button type="button" class="cta-button" onclick="switchCamera('face')" style="padding: 5px 15px; font-size: 0.8rem; background:var(--search-bg); color:var(--text-primary); border:1px solid var(--border-color);">🔄 Flip</button>
+                                        <button type="button" class="cta-button" onclick="capturePhoto('face')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture Photo</button>
+                                    </div>
                                 </div>
                                 <div id="face-preview-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <img id="face-preview" src="" style="width:100%; max-width:150px; border-radius:5px; border:2px solid #10b981;">
@@ -291,7 +294,10 @@
                                 <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 5px 0;">Take a clear photo of the front of your National Identity Card.</p>
                                 <div id="nic-camera-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <video id="nic-video" width="100%" style="max-width:300px; border-radius:5px; background:#000;" autoplay playsinline></video>
-                                    <button type="button" class="cta-button" onclick="capturePhoto('nic')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture NIC Front</button>
+                                    <div style="display:flex; gap:10px; width:100%; justify-content:center;">
+                                        <button type="button" class="cta-button" onclick="switchCamera('nic')" style="padding: 5px 15px; font-size: 0.8rem; background:var(--search-bg); color:var(--text-primary); border:1px solid var(--border-color);">🔄 Flip</button>
+                                        <button type="button" class="cta-button" onclick="capturePhoto('nic')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture NIC Front</button>
+                                    </div>
                                 </div>
                                 <div id="nic-preview-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <img id="nic-preview" src="" style="width:100%; max-width:200px; border-radius:5px; border:2px solid #10b981;">
@@ -307,7 +313,10 @@
                                 <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 5px 0;">Take a clear photo of the back of your National Identity Card.</p>
                                 <div id="nicback-camera-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <video id="nicback-video" width="100%" style="max-width:300px; border-radius:5px; background:#000;" autoplay playsinline></video>
-                                    <button type="button" class="cta-button" onclick="capturePhoto('nicback')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture NIC Back</button>
+                                    <div style="display:flex; gap:10px; width:100%; justify-content:center;">
+                                        <button type="button" class="cta-button" onclick="switchCamera('nicback')" style="padding: 5px 15px; font-size: 0.8rem; background:var(--search-bg); color:var(--text-primary); border:1px solid var(--border-color);">🔄 Flip</button>
+                                        <button type="button" class="cta-button" onclick="capturePhoto('nicback')" style="padding: 5px 15px; font-size: 0.8rem; background:#10b981;">📸 Capture NIC Back</button>
+                                    </div>
                                 </div>
                                 <div id="nicback-preview-container" style="display:none; flex-direction:column; gap:5px; align-items:center;">
                                     <img id="nicback-preview" src="" style="width:100%; max-width:200px; border-radius:5px; border:2px solid #10b981;">

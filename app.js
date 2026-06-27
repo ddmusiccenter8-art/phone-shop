@@ -1080,14 +1080,23 @@ function closeMobileCategories() {
 // LIVE CAMERA CAPTURE LOGIC
 // ============================
 let activeStreams = {};
+let currentFacingMode = {
+    face: 'user',
+    nic: 'environment',
+    nicback: 'environment'
+};
 
 async function startCamera(type) {
     const video = document.getElementById(`${type}-video`);
     const cameraContainer = document.getElementById(`${type}-camera-container`);
     const startBtn = document.getElementById(`start-${type}-btn`);
     
+    // Stop any existing stream for this type
+    stopCamera(type);
+    
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        const mode = currentFacingMode[type] || 'user';
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode } });
         video.srcObject = stream;
         activeStreams[type] = stream;
         
@@ -1095,8 +1104,26 @@ async function startCamera(type) {
         startBtn.style.display = 'none';
     } catch (err) {
         console.error("Camera access error:", err);
+        // Fallback to default if environment fails (e.g., desktop webcam)
+        if (currentFacingMode[type] === 'environment') {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                activeStreams[type] = stream;
+                cameraContainer.style.display = 'flex';
+                startBtn.style.display = 'none';
+                return;
+            } catch (fallbackErr) {
+                console.error("Fallback camera error:", fallbackErr);
+            }
+        }
         alert("Unable to access camera. Please make sure you have a camera and have granted browser permissions.");
     }
+}
+
+function switchCamera(type) {
+    currentFacingMode[type] = currentFacingMode[type] === 'user' ? 'environment' : 'user';
+    startCamera(type);
 }
 
 function capturePhoto(type) {
