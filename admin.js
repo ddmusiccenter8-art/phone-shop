@@ -926,3 +926,47 @@ function respondToDispute(disputeId) {
     }
 }
 
+// Global search filter
+document.getElementById('admin-search')?.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#admin-table-body tr');
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+    });
+});
+
+// --- SPA Navigation Logic ---
+function switchAdminView(viewId) {
+    // 1. Hide all views
+    document.querySelectorAll('.admin-view').forEach(view => {
+        view.classList.remove('active');
+    });
+    
+    // 2. Show target view
+    const target = document.getElementById(viewId);
+    if(target) target.classList.add('active');
+    
+    // 3. Update sidebar active state
+    document.querySelectorAll('.admin-sidebar-menu li').forEach(li => {
+        li.classList.remove('active');
+        if(li.getAttribute('onclick') && li.getAttribute('onclick').includes(viewId)) {
+            li.classList.add('active');
+        }
+    });
+    
+    // 4. Close mobile sidebar if open
+    closeSidebarMobile();
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    if(sidebar) sidebar.classList.toggle('open');
+}
+
+function closeSidebarMobile() {
+    if(window.innerWidth <= 768) {
+        const sidebar = document.getElementById('admin-sidebar');
+        if(sidebar) sidebar.classList.remove('open');
+    }
+}
