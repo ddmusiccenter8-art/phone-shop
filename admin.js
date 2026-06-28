@@ -646,6 +646,7 @@ function renderOrdersTable(searchTerm = '') {
                     <div>
                         <span style="background:${stColor}; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; display:inline-block;">${order.status}</span>
                         <div style="margin-top:6px;"><span style="background:${slaColor}15; color:${slaColor}; padding:3px 8px; border-radius:15px; font-size:0.7rem; font-weight:bold;">${slaText}</span></div>
+                        ${order.returnReason ? `<div style="margin-top:8px; padding:6px; border:1px solid #ef4444; border-radius:6px; background:rgba(239,68,68,0.05); font-size:0.7rem; color:#ef4444; width: max-content; max-width:180px;"><strong style="font-size:0.75rem;"><i class="fa-solid fa-rotate-left"></i> Return Reason:</strong><br><span style="color:var(--text-primary); margin-top:3px; display:inline-block; font-weight:500;">${order.returnReason}</span></div>` : ''}
                     </div>
                     <!-- Actions -->
                     <div style="text-align:right; display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
@@ -655,6 +656,8 @@ function renderOrdersTable(searchTerm = '') {
                             <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>🚚 Shipped</option>
                             <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>🏍️ Out for Delivery</option>
                             <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
+                            <option value="Return Requested" ${order.status === 'Return Requested' ? 'selected' : ''}>⚠️ Return Requested</option>
+                            <option value="Returned" ${order.status === 'Returned' ? 'selected' : ''}>↩️ Returned</option>
                         </select>
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
                             <button onclick="printWaybill('${order.id}')" style="background:var(--secondary-accent); color:white; border:none; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer; transition:0.3s;" title="Print AWB"><i class="fa-solid fa-barcode"></i> AWB</button>

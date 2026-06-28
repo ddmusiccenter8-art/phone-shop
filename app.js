@@ -1066,6 +1066,7 @@ function renderMyOrders() {
                 <div>
                     <strong style="color:var(--text-primary); font-size:1.1rem; margin-right:10px;">${order.trackingId || order.id}</strong>
                     <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--accent-color); color:var(--accent-color); padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+                    ${order.status === 'Delivered' ? `<button onclick="requestReturn('${order.id}')" style="background:transparent; border:1px solid #f97316; color:#f97316; padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer; margin-left:5px;"><i class="fa-solid fa-rotate-left"></i> Return</button>` : ''}
                     <button onclick="openDispute('${order.id}')" style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer; margin-left:5px;"><i class="fa-solid fa-flag"></i> Dispute</button>
                 </div>
                 <span style="background:${statusColor}; color:white; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">${order.status}</span>
@@ -1766,4 +1767,20 @@ function openDispute(orderId) {
     localStorage.setItem('VASIZ_disputes', JSON.stringify(disputes));
     alert(`Dispute ${newDispute.id} has been filed successfully! Our team will review it within 24-48 hours.`);
     renderMyOrders();
+}
+
+function requestReturn(orderId) {
+    const reason = prompt('Please describe why you want to return this order (e.g. wrong size, defective):');
+    if (!reason || reason.trim() === '') return;
+
+    const orders = getOrders();
+    const orderIndex = orders.findIndex(o => o.id === orderId);
+    
+    if (orderIndex !== -1) {
+        orders[orderIndex].status = 'Return Requested';
+        orders[orderIndex].returnReason = reason.trim();
+        saveOrders(orders);
+        alert('Your return request has been submitted successfully.');
+        renderMyOrders();
+    }
 }
