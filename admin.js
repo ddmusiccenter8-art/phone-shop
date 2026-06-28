@@ -734,22 +734,26 @@ function renderSellerApprovals() {
         let statusBadge = '';
         let actionBtns = '';
         
+        const currentUser = JSON.parse(localStorage.getItem('VASIZ_currentUser') || 'null');
+        const isSuperAdmin = (currentUser && currentUser.loginId === 'admin');
+
         if (seller.sellerStatus === 'pending_approval') {
             statusBadge = '<span style="background:#f59e0b; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">⏳ Pending</span>';
             actionBtns = `
                 <button class="action-btn" style="background:#10b981;" onclick="approveSeller('${seller.loginId}')"><i class="fa-solid fa-check"></i> Approve</button>
                 <button class="action-btn delete-btn" onclick="rejectSeller('${seller.loginId}')"><i class="fa-solid fa-times"></i> Reject</button>
             `;
+            if (isSuperAdmin) {
+                actionBtns += `<button class="action-btn delete-btn" style="margin-left:5px;" onclick="deleteSeller('${seller.loginId}')"><i class="fa-solid fa-trash"></i> Delete</button>`;
+            }
         } else if (seller.sellerStatus === 'approved') {
             statusBadge = '<span style="background:#10b981; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">✅ Approved</span>';
             actionBtns = `<button class="action-btn delete-btn" onclick="rejectSeller('${seller.loginId}')"><i class="fa-solid fa-ban"></i> Suspend</button>`;
         } else if (seller.sellerStatus === 'rejected') {
-            const currentUser = JSON.parse(localStorage.getItem('VASIZ_currentUser') || 'null');
             statusBadge = '<span style="background:#ef4444; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">❌ Rejected</span>';
             actionBtns = `<button class="action-btn" style="background:#10b981;" onclick="approveSeller('${seller.loginId}')"><i class="fa-solid fa-check"></i> Re-Approve</button>`;
             
-            // Only Super Admin can delete rejected sellers
-            if (currentUser && currentUser.loginId === 'admin') {
+            if (isSuperAdmin) {
                 actionBtns += `<button class="action-btn delete-btn" style="margin-left:5px;" onclick="deleteSeller('${seller.loginId}')"><i class="fa-solid fa-trash"></i> Delete</button>`;
             }
         }
