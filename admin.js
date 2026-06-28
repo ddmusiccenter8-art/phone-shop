@@ -656,9 +656,10 @@ function renderOrdersTable(searchTerm = '') {
                             <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>🏍️ Out for Delivery</option>
                             <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
                         </select>
-                        <div style="display:flex; gap:6px;">
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
                             <button onclick="printWaybill('${order.id}')" style="background:var(--secondary-accent); color:white; border:none; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer; transition:0.3s;" title="Print AWB"><i class="fa-solid fa-barcode"></i> AWB</button>
                             <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--border-color); color:var(--text-primary); padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer; transition:0.3s;" title="Invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+                            <button onclick="printPickList('${order.id}')" style="background:transparent; border:1px solid #10b981; color:#10b981; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer; transition:0.3s;" title="PickList"><i class="fa-solid fa-list-check"></i> PickList</button>
                         </div>
                     </div>
                 </div>
@@ -965,8 +966,240 @@ function toggleSidebar() {
 }
 
 function closeSidebarMobile() {
-    if(window.innerWidth <= 768) {
-        const sidebar = document.getElementById('admin-sidebar');
-        if(sidebar) sidebar.classList.remove('open');
+    const sidebar = document.getElementById('admin-sidebar');
+    if(sidebar && sidebar.classList.contains('open') && window.innerWidth <= 768) {
+        sidebar.classList.remove('open');
     }
+}
+
+// ============================
+// PRINTING FUNCTIONS (AWB, INVOICE, PICKLIST)
+// ============================
+
+function openPrintWindow(htmlContent, title) {
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>${title}</title>
+                <style>
+                    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333; }
+                    .print-container { max-width: 800px; margin: 0 auto; border: 1px solid #ccc; padding: 30px; border-radius: 8px; }
+                    .header-logo { max-height: 50px; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+                    th { background: #f8fafc; font-weight: 600; color: #1e293b; }
+                    .barcode { font-family: 'Libre Barcode 39', monospace; font-size: 40px; margin: 10px 0; letter-spacing: 2px;}
+                    .text-right { text-align: right; }
+                    .text-center { text-align: center; }
+                    .fw-bold { font-weight: bold; }
+                    .mb-1 { margin-bottom: 5px; }
+                    .mb-2 { margin-bottom: 15px; }
+                    .flex-between { display: flex; justify-content: space-between; }
+                    .awb-box { border: 2px solid #000; padding: 20px; }
+                    .awb-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items:center; }
+                    .awb-section { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 10px; }
+                    @media print {
+                        body { padding: 0; }
+                        .print-container { border: none; padding: 0; }
+                        @page { margin: 1cm; }
+                    }
+                </style>
+                <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
+            </head>
+            <body onload="setTimeout(() => { window.print(); window.close(); }, 500)">
+                ${htmlContent}
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
+function printWaybill(orderId) {
+    const orders = JSON.parse(localStorage.getItem('VASIZ_orders') || '[]');
+    const order = orders.find(o => o.id === orderId);
+    if(!order) return alert("Order not found!");
+    
+    let itemsHtml = '';
+    order.items.forEach(item => {
+        itemsHtml += `<div>${item.name} x ${item.quantity || 1} (SKU: ${item.cartItemId || item.id+'-STD'})</div>`;
+    });
+
+    const html = `
+        <div class="print-container awb-box">
+            <div class="awb-header">
+                <div>
+                    <h2 style="margin:0;">VASIZ EXPRESS</h2>
+                    <p style="margin:0; font-size:0.8rem;">Standard Delivery</p>
+                </div>
+                <div class="text-right">
+                    <div class="barcode">*${order.id}*</div>
+                    <strong>${order.id}</strong>
+                </div>
+            </div>
+            
+            <div class="flex-between awb-section">
+                <div style="width: 48%;">
+                    <strong>FROM: VASIZ E-Commerce</strong><br>
+                    123 Vasiz Tower, Colombo 03, Sri Lanka.<br>
+                    Phone: +94 77 123 4567
+                </div>
+                <div style="width: 48%;">
+                    <strong>TO: ${order.customerName}</strong><br>
+                    ${order.address}<br>
+                    ${order.city}, ${order.postalCode}<br>
+                    Phone: ${order.phone}
+                </div>
+            </div>
+            
+            <div class="awb-section">
+                <strong>Package Contents:</strong>
+                <div style="margin-top: 10px; font-size: 0.9rem;">
+                    ${itemsHtml}
+                </div>
+            </div>
+            
+            <div class="flex-between" style="font-size: 1.2rem; font-weight: bold;">
+                <div>COD AMOUNT:</div>
+                <div>Rs ${order.total.toLocaleString()}</div>
+            </div>
+        </div>
+    `;
+    openPrintWindow(html, `AWB - ${order.id}`);
+}
+
+function printCustomerInvoice(orderId) {
+    const orders = JSON.parse(localStorage.getItem('VASIZ_orders') || '[]');
+    const order = orders.find(o => o.id === orderId);
+    if(!order) return alert("Order not found!");
+
+    let tbody = '';
+    order.items.forEach(item => {
+        tbody += `
+            <tr>
+                <td>${item.cartItemId || item.id+'-STD'}</td>
+                <td>${item.name} <br><small style="color:#666;">Size/Variant: ${item.selectedSize || 'Standard'}</small></td>
+                <td>Rs ${(item.price).toLocaleString()}</td>
+                <td>${item.quantity || 1}</td>
+                <td class="text-right">Rs ${(item.price * (item.quantity || 1)).toLocaleString()}</td>
+            </tr>
+        `;
+    });
+
+    const date = new Date(order.date).toLocaleDateString();
+
+    const html = `
+        <div class="print-container">
+            <div class="flex-between mb-2" style="border-bottom: 2px solid #3b82f6; padding-bottom: 20px;">
+                <div>
+                    <h1 style="color: #3b82f6; margin: 0;">VASIZ</h1>
+                    <p style="margin: 5px 0 0; color: #666;">Official Invoice</p>
+                </div>
+                <div class="text-right">
+                    <h2 style="margin: 0;">INVOICE</h2>
+                    <p style="margin: 5px 0 0;"># ${order.id}</p>
+                    <p style="margin: 0; color: #666;">Date: ${date}</p>
+                </div>
+            </div>
+            
+            <div class="flex-between mb-2">
+                <div>
+                    <strong>Billed To:</strong><br>
+                    ${order.customerName}<br>
+                    ${order.address}, ${order.city}<br>
+                    Phone: ${order.phone}
+                </div>
+                <div class="text-right">
+                    <strong>Payment Method:</strong><br>
+                    ${order.paymentMethod || 'Cash on Delivery'}<br>
+                    <strong>Status:</strong> ${order.status}
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Item Description</th>
+                        <th>Unit Price</th>
+                        <th>Qty</th>
+                        <th class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tbody}
+                </tbody>
+            </table>
+            
+            <div style="width: 300px; margin-left: auto;">
+                <div class="flex-between mb-1">
+                    <span>Subtotal:</span>
+                    <span>Rs ${order.total.toLocaleString()}</span>
+                </div>
+                <div class="flex-between mb-1">
+                    <span>Shipping:</span>
+                    <span>Rs 0.00</span>
+                </div>
+                <div class="flex-between mb-1" style="font-size: 1.2rem; font-weight: bold; border-top: 1px solid #333; padding-top: 10px;">
+                    <span>Grand Total:</span>
+                    <span>Rs ${order.total.toLocaleString()}</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 50px; text-align: center; color: #666; font-size: 0.9rem;">
+                Thank you for shopping with VASIZ! If you have any questions about this invoice, please contact support@vasiz.com.
+            </div>
+        </div>
+    `;
+    openPrintWindow(html, `Invoice - ${order.id}`);
+}
+
+function printPickList(orderId) {
+    const orders = JSON.parse(localStorage.getItem('VASIZ_orders') || '[]');
+    const order = orders.find(o => o.id === orderId);
+    if(!order) return alert("Order not found!");
+
+    let tbody = '';
+    order.items.forEach(item => {
+        tbody += `
+            <tr>
+                <td style="text-align: center; font-size: 1.5rem;">&#9744;</td>
+                <td>${item.cartItemId || item.id+'-STD'}</td>
+                <td><strong>${item.name}</strong> <br><small>Size: ${item.selectedSize || 'Standard'}</small></td>
+                <td style="font-size: 1.2rem; font-weight: bold; text-align: center;">${item.quantity || 1}</td>
+            </tr>
+        `;
+    });
+
+    const html = `
+        <div class="print-container">
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                <h2 style="margin: 0;">WAREHOUSE PICKING LIST</h2>
+                <p style="margin: 5px 0 0; color: #666;">Order #${order.id} | Date: ${new Date().toLocaleDateString()}</p>
+            </div>
+            
+            <div class="mb-2">
+                <strong>Customer:</strong> ${order.customerName} &nbsp;|&nbsp; <strong>Courier:</strong> ${order.courierName || 'Vasiz Express'}
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px; text-align: center;">Pick</th>
+                        <th>SKU</th>
+                        <th>Product Details</th>
+                        <th style="text-align: center;">Qty Required</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tbody}
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 30px; font-size: 0.9rem; padding: 15px; border: 1px dashed #ccc;">
+                <strong>Picker Signature:</strong> _______________________ &nbsp;&nbsp;&nbsp;&nbsp; <strong>Packer Signature:</strong> _______________________
+            </div>
+        </div>
+    `;
+    openPrintWindow(html, `PickList - ${order.id}`);
 }
