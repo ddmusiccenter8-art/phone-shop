@@ -756,6 +756,16 @@ function renderSellerApprovals() {
             if (isSuperAdmin) {
                 actionBtns += `<button class="action-btn delete-btn" style="margin-left:5px;" onclick="deleteSeller('${seller.loginId}')"><i class="fa-solid fa-trash"></i> Delete</button>`;
             }
+        } else {
+            // Fallback for missing or unknown status
+            statusBadge = '<span style="background:#64748b; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">❓ Unknown Status</span>';
+            actionBtns = `
+                <button class="action-btn" style="background:#10b981;" onclick="approveSeller('${seller.loginId}')"><i class="fa-solid fa-check"></i> Approve</button>
+                <button class="action-btn delete-btn" onclick="rejectSeller('${seller.loginId}')"><i class="fa-solid fa-times"></i> Reject</button>
+            `;
+            if (isSuperAdmin) {
+                actionBtns += `<button class="action-btn delete-btn" style="margin-left:5px;" onclick="deleteSeller('${seller.loginId}')"><i class="fa-solid fa-trash"></i> Delete</button>`;
+            }
         }
 
         const bank = seller.bankDetails || {};
