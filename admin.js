@@ -476,53 +476,197 @@ function renderFeedbacks() {
     });
 }
 
-// Order Management
-function renderOrdersTable() {
-    const tbody = document.getElementById('orders-table-body');
-    if(!tbody) return;
-    
+// Order Management - Daraz Style
+let currentOrderFilter = 'All';
+let currentOrderPage = 1;
+const ORDERS_PER_PAGE = 10;
+
+function filterOrders(status) {
+    currentOrderFilter = status;
+    currentOrderPage = 1;
+    // Update tab styles
+    const tabs = document.querySelectorAll('#order-status-tabs .order-tab');
+    tabs.forEach(tab => {
+        tab.style.borderBottom = '3px solid transparent';
+        tab.style.fontWeight = '500';
+        tab.style.color = 'var(--text-secondary)';
+    });
+    const activeIndex = ['All', 'Pending', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'].indexOf(status);
+    if (tabs[activeIndex]) {
+        tabs[activeIndex].style.borderBottom = '3px solid var(--accent-color)';
+        tabs[activeIndex].style.fontWeight = '600';
+        tabs[activeIndex].style.color = 'var(--text-primary)';
+    }
+    renderOrdersTable();
+}
+
+function searchOrders(term) {
+    currentOrderPage = 1;
+    renderOrdersTable(term.toLowerCase());
+}
+
+function changeOrderPage(dir) {
+    currentOrderPage += dir;
+    if (currentOrderPage < 1) currentOrderPage = 1;
+    renderOrdersTable();
+}
+
+function exportOrders() {
     const orders = getOrders();
-    tbody.innerHTML = '';
+    let csv = 'Order ID,Tracking ID,Customer,Phone,Address,Items,Total,Payment,Status,Date\n';
+    orders.forEach(o => {
+        const items = o.items.map(i => i.name).join(' | ');
+        csv += `"${o.id}","${o.trackingId || ''}","${o.customerName}","${o.customerPhone}","${o.customerAddress || ''}","${items}",${o.total},"${o.paymentMethod || 'COD'}","${o.status}","${o.date}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'vasiz_orders_export.csv'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+function renderOrdersTable(searchTerm = '') {
+    const container = document.getElementById('orders-table-body');
+    if(!container) return;
     
-    if(orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders found.</td></tr>';
+    let orders = getOrders();
+    
+    // Filter by status
+    if (currentOrderFilter !== 'All') {
+        orders = orders.filter(o => o.status === currentOrderFilter);
+    }
+    
+    // Search
+    if (searchTerm) {
+        orders = orders.filter(o => 
+            (o.id || '').toLowerCase().includes(searchTerm) ||
+            (o.trackingId || '').toLowerCase().includes(searchTerm) ||
+            (o.customerName || '').toLowerCase().includes(searchTerm) ||
+            (o.customerPhone || '').includes(searchTerm)
+        );
+    }
+    
+    // Sort
+    const sortEl = document.getElementById('order-sort');
+    const sortDir = sortEl ? sortEl.value : 'newest';
+    if (sortDir === 'newest') {
+        orders = [...orders].reverse();
+    }
+    
+    // Update counts
+    const countBadge = document.getElementById('order-count-badge');
+    const allOrders = getOrders();
+    if (countBadge) {
+        const pendingCount = allOrders.filter(o => o.status === 'Pending').length;
+        countBadge.innerHTML = `Total: <strong>${allOrders.length}</strong> | Pending: <strong style="color:#f59e0b;">${pendingCount}</strong>`;
+    }
+    
+    // Pagination
+    const totalOrders = orders.length;
+    const totalPages = Math.max(1, Math.ceil(totalOrders / ORDERS_PER_PAGE));
+    if (currentOrderPage > totalPages) currentOrderPage = totalPages;
+    const start = (currentOrderPage - 1) * ORDERS_PER_PAGE;
+    const paginatedOrders = orders.slice(start, start + ORDERS_PER_PAGE);
+    
+    const pageInfo = document.getElementById('order-page-info');
+    if (pageInfo) pageInfo.innerHTML = `Page ${currentOrderPage}, ${start + 1}-${Math.min(start + ORDERS_PER_PAGE, totalOrders)} of ${totalOrders} item(s)`;
+    const pageNum = document.getElementById('order-page-number');
+    if (pageNum) pageNum.innerText = currentOrderPage;
+    const pagInfo2 = document.getElementById('order-pagination-info');
+    if (pagInfo2) pagInfo2.innerHTML = `Items per page: <strong>${ORDERS_PER_PAGE}</strong>`;
+    
+    container.innerHTML = '';
+    
+    if(paginatedOrders.length === 0) {
+        container.innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-secondary);"><i class="fa-solid fa-inbox" style="font-size:2rem; margin-bottom:10px; display:block;"></i>No orders found.</div>';
         return;
     }
     
-    // Copy array and reverse to show newest first without modifying original
-    [...orders].reverse().forEach(order => {
-        const tr = document.createElement('tr');
+    paginatedOrders.forEach(order => {
+        const orderDiv = document.createElement('div');
+        orderDiv.style = 'border-bottom: 1px solid var(--border-color);';
         
-        const itemNames = order.items.map(i => i.name).join(', ');
+        // Calculate SLA hours
+        const orderDate = new Date(order.date);
+        const now = new Date();
+        const hoursElapsed = Math.round((now - orderDate) / (1000 * 60 * 60));
+        const slaColor = hoursElapsed > 48 ? '#ef4444' : hoursElapsed > 24 ? '#f59e0b' : '#10b981';
+        const slaText = hoursElapsed > 0 ? `${hoursElapsed} hrs` : 'Just now';
         
-        tr.innerHTML = `
-            <td>
-                <strong>${order.id}</strong><br>
-                <span style="font-size:0.8rem; background:var(--search-bg); padding:2px 5px; border-radius:3px;">${order.paymentMethod || 'Cash on Delivery'}</span>
-            </td>
-            <td>
-                ${order.customerName}<br>
-                <small style="color:var(--text-secondary);">${order.customerPhone}</small><br>
-                <small style="color:var(--text-secondary);">${order.customerAddress}</small>
-            </td>
-            <td>${itemNames}</td>
-            <td>Rs. ${order.total.toLocaleString()}</td>
-            <td>${order.date}</td>
-            <td>
-                <select onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 5px; font-size: 0.9rem; width:100%; margin-bottom:5px;">
-                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                    <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                    <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                    <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
-                    <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                </select>
-                <div style="display:flex; gap:5px; margin-top:5px;">
-                    <button onclick="printWaybill('${order.id}')" style="flex:1; background:#3b82f6; color:white; border:none; padding:4px 0; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-print"></i> Waybill</button>
-                    <button onclick="printCustomerInvoice('${order.id}')" style="flex:1; background:transparent; border:1px solid var(--accent-color); color:var(--accent-color); padding:4px 0; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+        // Status badge
+        const statusColors = { 'Pending': '#f59e0b', 'Processing': '#3b82f6', 'Shipped': '#8b5cf6', 'Out for Delivery': '#f97316', 'Delivered': '#10b981' };
+        const stColor = statusColors[order.status] || '#64748b';
+        
+        // Customer header row
+        let headerHtml = `
+            <div style="padding:10px 25px; background:var(--search-bg); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--border-color);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-user-circle" style="font-size:1.3rem; color:var(--text-secondary);"></i>
+                    <strong style="color:var(--text-primary); font-size:0.9rem;">${order.customerName}</strong>
+                    <span style="font-size:0.75rem; color:var(--text-secondary);">(${order.items.length} item${order.items.length > 1 ? 's' : ''})</span>
                 </div>
-            </td>
+                <div style="display:flex; align-items:center; gap:15px; font-size:0.8rem; color:var(--text-secondary);">
+                    <span>Order: <strong style="color:var(--accent-color);">${order.id}</strong></span>
+                    <span>Track: <code style="background:var(--card-bg); padding:1px 5px; border-radius:3px; font-size:0.75rem;">${order.trackingId || 'N/A'}</code></span>
+                    <span>Created: ${order.date}</span>
+                </div>
+            </div>
         `;
-        tbody.appendChild(tr);
+        
+        // Product rows
+        let productsHtml = '';
+        const allProducts = getProducts();
+        order.items.forEach(item => {
+            const dbProduct = allProducts.find(p => p.id === item.id);
+            const imgSrc = (dbProduct && dbProduct.image) ? dbProduct.image : `https://via.placeholder.com/60x60/e2e8f0/64748b?text=${(item.name || 'Item').substring(0,3)}`;
+            const sku = item.cartItemId || `${item.id}-STD`;
+            
+            productsHtml += `
+                <div style="display:grid; grid-template-columns: 3fr 1.2fr 1.2fr 1fr 1.5fr; padding:15px 25px; align-items:center; gap:10px;">
+                    <!-- Product -->
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <img src="${imgSrc}" alt="${item.name}" style="width:55px; height:55px; object-fit:cover; border-radius:6px; border:1px solid var(--border-color); flex-shrink:0;">
+                        <div>
+                            <p style="margin:0; font-size:0.85rem; color:var(--text-primary); font-weight:500; line-height:1.3;">${item.name}</p>
+                            ${item.selectedSize && item.selectedSize !== 'Standard' ? `<span style="font-size:0.7rem; color:var(--text-secondary);"> × ${item.quantity || 1}</span>` : `<span style="font-size:0.7rem; color:var(--text-secondary);"> × ${item.quantity || 1}</span>`}
+                            <p style="margin:2px 0 0 0; font-size:0.7rem; color:var(--text-secondary);">SKU: ${sku}</p>
+                        </div>
+                    </div>
+                    <!-- Total Amount -->
+                    <div>
+                        <p style="margin:0; font-size:0.9rem; font-weight:600; color:var(--text-primary);">Rs ${(item.price * (item.quantity || 1)).toLocaleString()}</p>
+                        <p style="margin:2px 0 0; font-size:0.75rem; color:var(--text-secondary);">${order.paymentMethod || 'Cash on Delivery'}</p>
+                    </div>
+                    <!-- Delivery -->
+                    <div>
+                        <p style="margin:0; font-size:0.8rem; color:var(--text-primary); font-weight:500;">Standard</p>
+                        <p style="margin:2px 0 0; font-size:0.7rem; color:var(--text-secondary);">${order.courierName || 'Vasiz Express'}</p>
+                    </div>
+                    <!-- Status -->
+                    <div>
+                        <span style="background:${stColor}; color:white; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; display:inline-block;">${order.status}</span>
+                        <div style="margin-top:4px;"><span style="background:${slaColor}15; color:${slaColor}; padding:2px 6px; border-radius:3px; font-size:0.7rem; font-weight:bold;">${slaText}</span></div>
+                    </div>
+                    <!-- Actions -->
+                    <div style="text-align:right; display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
+                        <select onchange="updateOrderStatus('${order.id}', this.value)" style="padding:6px 10px; font-size:0.8rem; border-radius:5px; border:1px solid var(--border-color); background:var(--accent-color); color:white; cursor:pointer; font-weight:bold; width:140px;">
+                            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                            <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>📦 Processing</option>
+                            <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>🚚 Shipped</option>
+                            <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>🏍️ Out for Delivery</option>
+                            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
+                        </select>
+                        <div style="display:flex; gap:5px;">
+                            <button onclick="printWaybill('${order.id}')" style="background:#3b82f6; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Print AWB"><i class="fa-solid fa-barcode"></i> AWB</button>
+                            <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--border-color); color:var(--text-primary); padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        orderDiv.innerHTML = headerHtml + productsHtml;
+        container.appendChild(orderDiv);
     });
 }
 

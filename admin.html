@@ -375,27 +375,74 @@
             </table>
         </div>
 
-        <!-- Manage Orders Section -->
-        <div class="admin-section" style="margin-top: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2><i class="fa-solid fa-box-open"></i> Manage Orders</h2>
+        <!-- Manage Orders Section (Daraz-Style) -->
+        <div class="admin-section" style="margin-top: 30px; padding: 0; overflow: hidden;">
+            <!-- Header -->
+            <div style="padding: 20px 25px; border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="margin:0;"><i class="fa-solid fa-box-open"></i> Order Management</h2>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <span id="order-count-badge" style="font-size:0.85rem; color:var(--text-secondary);"></span>
+                    <button onclick="renderOrdersTable()" class="action-btn" style="background:var(--secondary-accent);"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+                </div>
             </div>
-            
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Items</th>
-                        <th>Total (Rs.)</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-table-body">
-                    <!-- Order rows injected by JS -->
-                </tbody>
-            </table>
+
+            <!-- Status Filter Tabs -->
+            <div style="display:flex; gap:0; border-bottom:2px solid var(--border-color); overflow-x:auto; background:var(--search-bg);" id="order-status-tabs">
+                <button class="order-tab active" onclick="filterOrders('All')" style="padding:12px 20px; border:none; background:transparent; font-weight:600; font-size:0.85rem; cursor:pointer; color:var(--text-primary); border-bottom:3px solid var(--accent-color); white-space:nowrap;">All Orders</button>
+                <button class="order-tab" onclick="filterOrders('Pending')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">⏳ Pending</button>
+                <button class="order-tab" onclick="filterOrders('Processing')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">📦 Processing</button>
+                <button class="order-tab" onclick="filterOrders('Shipped')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">🚚 Shipped</button>
+                <button class="order-tab" onclick="filterOrders('Out for Delivery')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">🏍️ Out for Delivery</button>
+                <button class="order-tab" onclick="filterOrders('Delivered')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">✅ Delivered</button>
+            </div>
+
+            <!-- Print Status & Search Row -->
+            <div style="padding:12px 25px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--border-color); background:var(--card-bg);">
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <span style="font-size:0.8rem; padding:4px 10px; border-radius:15px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer;" onclick="filterOrders('All')">AWB Unprinted</span>
+                    <span style="font-size:0.8rem; padding:4px 10px; border-radius:15px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer;">Invoice Unprinted</span>
+                    <span style="font-size:0.8rem; padding:4px 10px; border-radius:15px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer;">Invoice Printed</span>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="order-search-input" placeholder="Search Order / Tracking ID..." style="padding:8px 14px; border-radius:6px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-size:0.85rem; width:220px;" oninput="searchOrders(this.value)">
+                    <select id="order-sort" onchange="renderOrdersTable()" style="padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-size:0.85rem;">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Page Info -->
+            <div style="padding:8px 25px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); background:var(--card-bg);">
+                <span id="order-page-info" style="font-size:0.8rem; color:var(--text-secondary);"></span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="action-btn" style="background:var(--search-bg); color:var(--text-primary); border:1px solid var(--border-color); padding:4px 10px; font-size:0.8rem;" onclick="exportOrders()"><i class="fa-solid fa-file-export"></i> Export</button>
+                </div>
+            </div>
+
+            <!-- Column Headers -->
+            <div style="display:grid; grid-template-columns: 3fr 1.2fr 1.2fr 1fr 1.5fr; padding:10px 25px; border-bottom:2px solid var(--border-color); background:var(--search-bg); font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">
+                <span>Product</span>
+                <span>Total Amount</span>
+                <span>Delivery</span>
+                <span>Status</span>
+                <span style="text-align:right;">Actions</span>
+            </div>
+
+            <!-- Orders Container -->
+            <div id="orders-table-body" style="min-height:100px;">
+                <!-- Order rows injected by JS -->
+            </div>
+
+            <!-- Pagination -->
+            <div style="padding:15px 25px; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; background:var(--search-bg);">
+                <span id="order-pagination-info" style="font-size:0.8rem; color:var(--text-secondary);"></span>
+                <div style="display:flex; gap:5px;">
+                    <button id="order-prev-btn" onclick="changeOrderPage(-1)" style="padding:5px 12px; border:1px solid var(--border-color); border-radius:4px; background:var(--card-bg); color:var(--text-primary); cursor:pointer; font-size:0.85rem;">&laquo; Previous</button>
+                    <span id="order-page-number" style="padding:5px 12px; background:var(--accent-color); color:white; border-radius:4px; font-weight:bold; font-size:0.85rem;">1</span>
+                    <button id="order-next-btn" onclick="changeOrderPage(1)" style="padding:5px 12px; border:1px solid var(--border-color); border-radius:4px; background:var(--card-bg); color:var(--text-primary); cursor:pointer; font-size:0.85rem;">Next &raquo;</button>
+                </div>
+            </div>
         </div>
 
         <!-- Disputes Section -->
