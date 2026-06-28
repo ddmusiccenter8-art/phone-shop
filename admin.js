@@ -594,7 +594,7 @@ function renderOrdersTable(searchTerm = '') {
         const slaText = hoursElapsed > 0 ? `${hoursElapsed} hrs` : 'Just now';
         
         // Status badge
-        const statusColors = { 'Pending': '#f59e0b', 'Processing': '#3b82f6', 'Shipped': '#8b5cf6', 'Out for Delivery': '#f97316', 'Delivered': '#10b981' };
+        const statusColors = { 'Pending': '#f59e0b', 'Processing': '#3b82f6', 'Shipped': '#8b5cf6', 'Out for Delivery': '#f97316', 'Delivered': '#10b981', 'Cancelled': '#ef4444', 'Return Requested': '#f97316', 'Returned': '#64748b' };
         const stColor = statusColors[order.status] || '#64748b';
         
         // Customer header row
@@ -658,6 +658,7 @@ function renderOrdersTable(searchTerm = '') {
                             <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
                             <option value="Return Requested" ${order.status === 'Return Requested' ? 'selected' : ''}>⚠️ Return Requested</option>
                             <option value="Returned" ${order.status === 'Returned' ? 'selected' : ''}>↩️ Returned</option>
+                            <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>❌ Cancelled</option>
                         </select>
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
                             <button onclick="printWaybill('${order.id}')" style="background:var(--secondary-accent); color:white; border:none; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer; transition:0.3s;" title="Print AWB"><i class="fa-solid fa-barcode"></i> AWB</button>
@@ -743,8 +744,14 @@ function renderSellerApprovals() {
             statusBadge = '<span style="background:#10b981; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">✅ Approved</span>';
             actionBtns = `<button class="action-btn delete-btn" onclick="rejectSeller('${seller.loginId}')"><i class="fa-solid fa-ban"></i> Suspend</button>`;
         } else if (seller.sellerStatus === 'rejected') {
+            const currentUser = JSON.parse(localStorage.getItem('VASIZ_currentUser') || 'null');
             statusBadge = '<span style="background:#ef4444; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">❌ Rejected</span>';
             actionBtns = `<button class="action-btn" style="background:#10b981;" onclick="approveSeller('${seller.loginId}')"><i class="fa-solid fa-check"></i> Re-Approve</button>`;
+            
+            // Only Super Admin can delete rejected sellers
+            if (currentUser && currentUser.loginId === 'admin') {
+                actionBtns += `<button class="action-btn delete-btn" style="margin-left:5px;" onclick="deleteSeller('${seller.loginId}')"><i class="fa-solid fa-trash"></i> Delete</button>`;
+            }
         }
 
         const bank = seller.bankDetails || {};
@@ -841,6 +848,19 @@ function rejectSeller(loginId) {
         renderSellerApprovals();
         alert(`Seller "${loginId}" has been REJECTED.`);
     }
+}
+
+function deleteSeller(loginId) {
+    if (!confirm(`WARNING: Are you sure you want to PERMANENTLY DELETE seller "${loginId}"? This action cannot be undone.`)) return;
+    
+    let users = JSON.parse(localStorage.getItem('VASIZ_users')) || [];
+    users = users.filter(u => u.loginId !== loginId);
+    
+    localStorage.setItem('VASIZ_users', JSON.stringify(users));
+    // If you have a Firebase delete function: if(window.fbDeleteUser) window.fbDeleteUser(loginId);
+    
+    renderSellerApprovals();
+    alert(`Seller "${loginId}" has been permanently deleted.`);
 }
 
 // ============================

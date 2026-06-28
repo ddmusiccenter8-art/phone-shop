@@ -1048,6 +1048,10 @@ function renderMyOrders() {
             sColor = 'var(--secondary-accent)'; 
             oColor = 'var(--secondary-accent)'; 
             dColor = 'var(--secondary-accent)';
+        } else if(order.status === 'Cancelled') {
+            statusColor = '#ef4444';
+            progress = 0;
+            pColor = '#ef4444';
         }
         
         const itemNamesHtml = order.items.map(i => {
@@ -1067,6 +1071,7 @@ function renderMyOrders() {
                     <strong style="color:var(--text-primary); font-size:1.1rem; margin-right:10px;">${order.trackingId || order.id}</strong>
                     <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--accent-color); color:var(--accent-color); padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer;"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
                     ${order.status === 'Delivered' ? `<button onclick="requestReturn('${order.id}')" style="background:transparent; border:1px solid #f97316; color:#f97316; padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer; margin-left:5px;"><i class="fa-solid fa-rotate-left"></i> Return</button>` : ''}
+                    ${(order.status === 'Pending' || order.status === 'Processing') ? `<button onclick="cancelOrder('${order.id}')" style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer; margin-left:5px;"><i class="fa-solid fa-xmark"></i> Cancel</button>` : ''}
                     <button onclick="openDispute('${order.id}')" style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:3px 8px; border-radius:5px; font-size:0.75rem; cursor:pointer; margin-left:5px;"><i class="fa-solid fa-flag"></i> Dispute</button>
                 </div>
                 <span style="background:${statusColor}; color:white; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:bold;">${order.status}</span>
@@ -1781,6 +1786,20 @@ function requestReturn(orderId) {
         orders[orderIndex].returnReason = reason.trim();
         saveOrders(orders);
         alert('Your return request has been submitted successfully.');
+        renderMyOrders();
+    }
+}
+
+function cancelOrder(orderId) {
+    if(!confirm("Are you sure you want to cancel this order? This action cannot be undone.")) return;
+    
+    const orders = getOrders();
+    const orderIndex = orders.findIndex(o => o.id === orderId);
+    
+    if (orderIndex !== -1) {
+        orders[orderIndex].status = 'Cancelled';
+        saveOrders(orders);
+        alert('Order has been cancelled.');
         renderMyOrders();
     }
 }
