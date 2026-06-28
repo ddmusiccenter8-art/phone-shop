@@ -584,7 +584,7 @@ function renderOrdersTable(searchTerm = '') {
     
     paginatedOrders.forEach(order => {
         const orderDiv = document.createElement('div');
-        orderDiv.style = 'border-bottom: 1px solid var(--border-color);';
+        orderDiv.style = 'background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.02); overflow:hidden;';
         
         // Calculate SLA hours
         const orderDate = new Date(order.date);
@@ -599,7 +599,7 @@ function renderOrdersTable(searchTerm = '') {
         
         // Customer header row
         let headerHtml = `
-            <div style="padding:10px 25px; background:var(--search-bg); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--border-color);">
+            <div style="padding:15px 20px; background:var(--search-bg); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--border-color);">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <i class="fa-solid fa-user-circle" style="font-size:1.3rem; color:var(--text-secondary);"></i>
                     <strong style="color:var(--text-primary); font-size:0.9rem;">${order.customerName}</strong>
@@ -644,21 +644,21 @@ function renderOrdersTable(searchTerm = '') {
                     </div>
                     <!-- Status -->
                     <div>
-                        <span style="background:${stColor}; color:white; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; display:inline-block;">${order.status}</span>
-                        <div style="margin-top:4px;"><span style="background:${slaColor}15; color:${slaColor}; padding:2px 6px; border-radius:3px; font-size:0.7rem; font-weight:bold;">${slaText}</span></div>
+                        <span style="background:${stColor}; color:white; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; display:inline-block;">${order.status}</span>
+                        <div style="margin-top:6px;"><span style="background:${slaColor}15; color:${slaColor}; padding:3px 8px; border-radius:15px; font-size:0.7rem; font-weight:bold;">${slaText}</span></div>
                     </div>
                     <!-- Actions -->
-                    <div style="text-align:right; display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
-                        <select onchange="updateOrderStatus('${order.id}', this.value)" style="padding:6px 10px; font-size:0.8rem; border-radius:5px; border:1px solid var(--border-color); background:var(--accent-color); color:white; cursor:pointer; font-weight:bold; width:140px;">
+                    <div style="text-align:right; display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+                        <select onchange="updateOrderStatus('${order.id}', this.value)" style="padding:8px 12px; font-size:0.8rem; border-radius:20px; border:1px solid var(--border-color); background:var(--accent-color); color:white; cursor:pointer; font-weight:bold; width:150px; outline:none;">
                             <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
                             <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>📦 Processing</option>
                             <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>🚚 Shipped</option>
                             <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>🏍️ Out for Delivery</option>
                             <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
                         </select>
-                        <div style="display:flex; gap:5px;">
-                            <button onclick="printWaybill('${order.id}')" style="background:#3b82f6; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Print AWB"><i class="fa-solid fa-barcode"></i> AWB</button>
-                            <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--border-color); color:var(--text-primary); padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;" title="Invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+                        <div style="display:flex; gap:6px;">
+                            <button onclick="printWaybill('${order.id}')" style="background:var(--secondary-accent); color:white; border:none; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer; transition:0.3s;" title="Print AWB"><i class="fa-solid fa-barcode"></i> AWB</button>
+                            <button onclick="printCustomerInvoice('${order.id}')" style="background:transparent; border:1px solid var(--border-color); color:var(--text-primary); padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer; transition:0.3s;" title="Invoice"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
                         </div>
                     </div>
                 </div>

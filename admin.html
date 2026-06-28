@@ -387,25 +387,25 @@
             </div>
 
             <!-- Status Filter Tabs -->
-            <div style="display:flex; gap:0; border-bottom:2px solid var(--border-color); overflow-x:auto; background:var(--search-bg);" id="order-status-tabs">
-                <button class="order-tab active" onclick="filterOrders('All')" style="padding:12px 20px; border:none; background:transparent; font-weight:600; font-size:0.85rem; cursor:pointer; color:var(--text-primary); border-bottom:3px solid var(--accent-color); white-space:nowrap;">All Orders</button>
-                <button class="order-tab" onclick="filterOrders('Pending')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">⏳ Pending</button>
-                <button class="order-tab" onclick="filterOrders('Processing')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">📦 Processing</button>
-                <button class="order-tab" onclick="filterOrders('Shipped')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">🚚 Shipped</button>
-                <button class="order-tab" onclick="filterOrders('Out for Delivery')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">🏍️ Out for Delivery</button>
-                <button class="order-tab" onclick="filterOrders('Delivered')" style="padding:12px 20px; border:none; background:transparent; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); border-bottom:3px solid transparent; white-space:nowrap;">✅ Delivered</button>
+            <div style="display:flex; gap:10px; padding: 15px 25px; border-bottom:1px solid var(--border-color); overflow-x:auto; background:var(--card-bg);" id="order-status-tabs">
+                <button class="order-tab active" onclick="filterOrders('All')" style="padding:8px 16px; border:none; background:var(--accent-color); border-radius:20px; font-weight:600; font-size:0.85rem; cursor:pointer; color:white; white-space:nowrap; transition:0.3s;">All Orders</button>
+                <button class="order-tab" onclick="filterOrders('Pending')" style="padding:8px 16px; border:1px solid var(--border-color); background:var(--search-bg); border-radius:20px; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); white-space:nowrap; transition:0.3s;">⏳ Pending</button>
+                <button class="order-tab" onclick="filterOrders('Processing')" style="padding:8px 16px; border:1px solid var(--border-color); background:var(--search-bg); border-radius:20px; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); white-space:nowrap; transition:0.3s;">📦 Processing</button>
+                <button class="order-tab" onclick="filterOrders('Shipped')" style="padding:8px 16px; border:1px solid var(--border-color); background:var(--search-bg); border-radius:20px; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); white-space:nowrap; transition:0.3s;">🚚 Shipped</button>
+                <button class="order-tab" onclick="filterOrders('Out for Delivery')" style="padding:8px 16px; border:1px solid var(--border-color); background:var(--search-bg); border-radius:20px; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); white-space:nowrap; transition:0.3s;">🏍️ Out for Delivery</button>
+                <button class="order-tab" onclick="filterOrders('Delivered')" style="padding:8px 16px; border:1px solid var(--border-color); background:var(--search-bg); border-radius:20px; font-weight:500; font-size:0.85rem; cursor:pointer; color:var(--text-secondary); white-space:nowrap; transition:0.3s;">✅ Delivered</button>
             </div>
 
             <!-- Print Status & Search Row -->
-            <div style="padding:12px 25px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--border-color); background:var(--card-bg);">
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <span style="font-size:0.8rem; padding:4px 10px; border-radius:15px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer;" onclick="filterOrders('All')">AWB Unprinted</span>
-                    <span style="font-size:0.8rem; padding:4px 10px; border-radius:15px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer;">Invoice Unprinted</span>
-                    <span style="font-size:0.8rem; padding:4px 10px; border-radius:15px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer;">Invoice Printed</span>
+            <div style="padding:15px 25px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; border-bottom:1px solid var(--border-color); background:var(--card-bg);">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <span style="font-size:0.8rem; padding:6px 12px; border-radius:20px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-primary); cursor:pointer; font-weight:500;" onclick="filterOrders('All')">AWB Unprinted</span>
+                    <span style="font-size:0.8rem; padding:6px 12px; border-radius:20px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-primary); cursor:pointer; font-weight:500;">Invoice Unprinted</span>
+                    <span style="font-size:0.8rem; padding:6px 12px; border-radius:20px; background:var(--search-bg); border:1px solid var(--border-color); color:var(--text-primary); cursor:pointer; font-weight:500;">Invoice Printed</span>
                 </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <input type="text" id="order-search-input" placeholder="Search Order / Tracking ID..." style="padding:8px 14px; border-radius:6px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-size:0.85rem; width:220px;" oninput="searchOrders(this.value)">
-                    <select id="order-sort" onchange="renderOrdersTable()" style="padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-size:0.85rem;">
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <input type="text" id="order-search-input" placeholder="Search Order / Tracking ID..." style="padding:10px 16px; border-radius:20px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-size:0.85rem; width:250px; outline:none; transition:border 0.3s;" oninput="searchOrders(this.value)">
+                    <select id="order-sort" onchange="renderOrdersTable()" style="padding:10px 14px; border-radius:20px; border:1px solid var(--border-color); background:var(--search-bg); color:var(--text-primary); font-size:0.85rem; outline:none; cursor:pointer;">
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
                     </select>
@@ -421,7 +421,7 @@
             </div>
 
             <!-- Column Headers -->
-            <div style="display:grid; grid-template-columns: 3fr 1.2fr 1.2fr 1fr 1.5fr; padding:10px 25px; border-bottom:2px solid var(--border-color); background:var(--search-bg); font-size:0.8rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">
+            <div style="display:grid; grid-template-columns: 3fr 1.2fr 1.2fr 1fr 1.5fr; padding:15px 25px; background:var(--search-bg); font-size:0.85rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.5px; margin-top:10px;">
                 <span>Product</span>
                 <span>Total Amount</span>
                 <span>Delivery</span>
